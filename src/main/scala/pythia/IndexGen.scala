@@ -1,4 +1,8 @@
-// Author: Rahul Bera
+/**********************************************************
+ * Author: Rahul Bera
+ * Description: Implements the index generation circuitry
+ * from state information
+ * ********************************************************/
 package pythia
 
 import chisel3._
