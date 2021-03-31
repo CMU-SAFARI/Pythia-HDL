@@ -10,16 +10,17 @@ class MasterModuleTests(c: MasterModule) extends PeekPokeTester(c) {
       poke(c.io.uAction, action)
       poke(c.io.uReward, reward)
       poke(c.io.sigUpdate, 1)
-      step(1)
+      step(2)
    }
 
    def queryQVStore(pc:Int, offset:Int, action:Int) = {
       poke(c.io.qPC, pc)
       poke(c.io.qOffset, offset)
       poke(c.io.sigQuery, 1)
-      step(1)
-      val act = peek(c.io.qAction).toInt
-      println(s"recommended action $act, expected $action")
+      step(2)
+      // val act = peek(c.io.qAction).toInt
+      // printf("recommended action %d, expected %d", act, action)
+      expect(c.io.qAction, action)
    }
 
    val pc = 0x7fff3028

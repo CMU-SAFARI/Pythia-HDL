@@ -15,7 +15,5 @@ class IndexGen extends Module {
     val index = Output(UInt(7.W))
   })
 
-  val tmp1 = Wire(UInt(32.W))
-  tmp1 := Cat(io.pc, io.offset)
-  io.index := tmp1(6,0)
+  io.index := Cat(io.pc, io.offset)(6,0)
 }
