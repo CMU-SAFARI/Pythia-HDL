@@ -10,18 +10,18 @@ class MasterModuleTests(c: MasterModule) extends PeekPokeTester(c) {
       poke(c.io.uAction, action)
       poke(c.io.uReward, reward)
       poke(c.io.sigUpdate, 1)
-      step(2)
+      step(1)
    }
 
-   def queryQVStore(pc:Int, offset:Int, action:Int) = {
-      poke(c.io.qPC, pc)
-      poke(c.io.qOffset, offset)
-      poke(c.io.sigQuery, 1)
-      step(2)
-      // val act = peek(c.io.qAction).toInt
-      // printf("recommended action %d, expected %d", act, action)
-      expect(c.io.qAction, action)
-   }
+   // def queryQVStore(pc:Int, offset:Int, action:Int) = {
+   //    poke(c.io.qPC, pc)
+   //    poke(c.io.qOffset, offset)
+   //    poke(c.io.sigQuery, 1)
+   //    step(1)
+   //    // val act = peek(c.io.qAction).toInt
+   //    // printf("recommended action %d, expected %d", act, action)
+   //    expect(c.io.qAction, action)
+   // }
 
    val pc = 0x7fff3028
    val offset = 5
@@ -29,10 +29,11 @@ class MasterModuleTests(c: MasterModule) extends PeekPokeTester(c) {
    val reward = 12
 
    // update QVStore first
-   updateQVStore(pc, offset, action, reward)
+   updateQVStore(pc, offset, action, 12)
+   updateQVStore(pc, offset, action, 10)
 
    // get action recommedation from QVStore
-   queryQVStore(pc, offset, action)
+   // queryQVStore(pc, offset, action)
 }
 
 class MasterModuleTester extends ChiselFlatSpec {

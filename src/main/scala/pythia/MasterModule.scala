@@ -48,49 +48,49 @@ class MasterModule extends Module
 
    // query phase
    io.qAction := 0.U
-   when(io.sigQuery)
-   {
-      printf("[QUERY] pc %x offset %d action %d\n", io.qPC, io.qOffset, io.qAction)
-
-      var index = RegInit(0.U(7.W))
-      igModule.io.pc := io.qPC
-      igModule.io.offset := io.qOffset
-      index = igModule.io.index
-      printf("[QUERY] index %d\n", index)
-
-      var qvalMax = RegInit(0.U(16.W)) // FIXME: it has to be initialized with very small -ve number
-      val actMax = RegInit(0.U(4.W))
-      var qval0 = RegInit(0.U(16.W))
-      var qval1 = RegInit(0.U(16.W))
-
-      for(i <- 0 until 7)
-      {
-         // dual read ports
-         plane.io.rdrow0 := index
-         plane.io.rdcol0 := (2*i).asUInt(4.W)
-         plane.io.rdrow1 := index
-         plane.io.rdcol1 := ((2*i)+1).asUInt(4.W)
-         plane.io.re := true.B
-         qval0 := plane.io.rddata0
-         qval1 := plane.io.rddata1
-
-         // max reduction
-         printf("[QUERY] iter %d qvalMax %d, actMax %d\n", i.asUInt, qvalMax, actMax)
-         printf("[QUERY] iter %d qval0 %d, qval1 %d\n", i.asUInt, qval0, qval1)
-         max3.io.nums(0) := qvalMax
-         max3.io.nums(1) := qval0
-         max3.io.nums(2) := qval1
-         max3.io.ids(0) := actMax
-         max3.io.ids(1) := (2*i).asUInt(4.W)
-         max3.io.ids(2) := ((2*i)+1).asUInt(4.W)
-         qvalMax := max3.io.maxNum
-         actMax := max3.io.maxId
-         printf("[QUERY] qvalMax %d, actMax %d\n", qvalMax, actMax)
-      }
-
-      io.qAction := actMax
-      printf("[QUERY] qAction %d\n", io.qAction)
-   }
+   // when(io.sigQuery)
+   // {
+   //    printf("[QUERY] pc %x offset %d action %d\n", io.qPC, io.qOffset, io.qAction)
+   //
+   //    var index = RegInit(0.U(7.W))
+   //    igModule.io.pc := io.qPC
+   //    igModule.io.offset := io.qOffset
+   //    index = igModule.io.index
+   //    printf("[QUERY] index %d\n", index)
+   //
+   //    var qvalMax = RegInit(0.U(16.W)) // FIXME: it has to be initialized with very small -ve number
+   //    val actMax = RegInit(0.U(4.W))
+   //    var qval0 = RegInit(0.U(16.W))
+   //    var qval1 = RegInit(0.U(16.W))
+   //
+   //    for(i <- 0 until 7)
+   //    {
+   //       // dual read ports
+   //       plane.io.rdrow0 := index
+   //       plane.io.rdcol0 := (2*i).asUInt(4.W)
+   //       plane.io.rdrow1 := index
+   //       plane.io.rdcol1 := ((2*i)+1).asUInt(4.W)
+   //       plane.io.re := true.B
+   //       qval0 := plane.io.rddata0
+   //       qval1 := plane.io.rddata1
+   //
+   //       // max reduction
+   //       printf("[QUERY] iter %d qvalMax %d, actMax %d\n", i.asUInt, qvalMax, actMax)
+   //       printf("[QUERY] iter %d qval0 %d, qval1 %d\n", i.asUInt, qval0, qval1)
+   //       max3.io.nums(0) := qvalMax
+   //       max3.io.nums(1) := qval0
+   //       max3.io.nums(2) := qval1
+   //       max3.io.ids(0) := actMax
+   //       max3.io.ids(1) := (2*i).asUInt(4.W)
+   //       max3.io.ids(2) := ((2*i)+1).asUInt(4.W)
+   //       qvalMax := max3.io.maxNum
+   //       actMax := max3.io.maxId
+   //       printf("[QUERY] qvalMax %d, actMax %d\n", qvalMax, actMax)
+   //    }
+   //
+   //    io.qAction := actMax
+   //    printf("[QUERY] qAction %d\n", io.qAction)
+   // }
 
    // update phase
    when(io.sigUpdate)
@@ -102,7 +102,7 @@ class MasterModule extends Module
 
       igModule.io.pc := io.qPC
       igModule.io.offset := io.qOffset
-      index = igModule.io.index
+      index := igModule.io.index
       printf("[UPDATE] index %d\n", index)
 
       plane.io.rdrow0 := index

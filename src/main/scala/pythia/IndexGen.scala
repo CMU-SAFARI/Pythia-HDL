@@ -16,4 +16,5 @@ class IndexGen extends Module {
   })
 
   io.index := Cat(io.pc, io.offset)(6,0)
+  printf("[IndexGen] pc %x offset %d index %d\n", io.pc, io.offset, io.index)
 }
