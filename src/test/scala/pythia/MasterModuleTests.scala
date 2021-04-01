@@ -27,21 +27,8 @@ class MasterModuleTests(c: MasterModule) extends PeekPokeTester(c) {
    }
 
    val pc = 0x7fff3028
-   val action = 2
-
-   // update QVStore first
    updateQVStore(pc, 5, 2, 6)
    queryQVStore(pc, 5, 2)
-   // updateQVStore(pc, 5, 3, 10)
-   // queryQVStore(pc, 5, 3)
-   // updateQVStore(pc, 5, 2, 6)
-   // queryQVStore(pc, 5, 3)
-   // updateQVStore(pc, 2, action, 10)
-   // updateQVStore(pc, 5, action, 8)
-   // updateQVStore(pc, 2, action, 12)
-
-   // get action recommedation from QVStore
-   // queryQVStore(pc, 5, action)
 }
 
 class MasterModuleTester extends ChiselFlatSpec {
