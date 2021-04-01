@@ -28,9 +28,9 @@ class MasterModuleTests(c: MasterModule) extends PeekPokeTester(c) {
 
    // update QVStore first
    updateQVStore(pc, 5, action, 6)
-   updateQVStore(pc, 5, action, 10)
+   updateQVStore(pc, 2, action, 10)
    updateQVStore(pc, 5, action, 8)
-   updateQVStore(pc, 5, action, 12)
+   updateQVStore(pc, 2, action, 12)
 
    // get action recommedation from QVStore
    // queryQVStore(pc, offset, action)

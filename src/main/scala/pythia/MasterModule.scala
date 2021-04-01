@@ -116,7 +116,7 @@ class MasterModule extends Module
       // ===================== write stage ==================== //
       plane.io.wrrow := state_index
       plane.io.wrcol := action_index
-      plane.io.wrdata := 42.U
+      plane.io.wrdata := updated_qval
       plane.io.we := true.B
       printf("[UPDATE WRITE] row_index %d col_index %d value-written %d\n", plane.io.wrrow, plane.io.wrcol, plane.io.wrdata)
       printf("===================================================\n\n\n")
