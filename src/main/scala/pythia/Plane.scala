@@ -36,6 +36,7 @@ class Plane extends Module {
 
   when(io.we) {
     mem(wrindex) := io.wrdata
+    printf("[PLANE WRITE] row %d col %d index %d val %d\n", io.wrrow, io.wrcol, wrindex, io.wrdata)
   }
 
   io.rddata0 := 0.U
@@ -43,5 +44,7 @@ class Plane extends Module {
   when(io.re) {
     io.rddata0 := mem(rdindex0)
     io.rddata1 := mem(rdindex1)
+    printf("[PLANE READ] row0 %d col0 %d index0 %d val %d\n", io.rdrow0, io.rdcol0, rdindex0, io.rddata0)
+    printf("[PLANE READ] row1 %d col1 %d index1 %d val %d\n", io.rdrow1, io.rdcol1, rdindex1, io.rddata1)
   }
 }

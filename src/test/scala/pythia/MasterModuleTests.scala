@@ -24,13 +24,13 @@ class MasterModuleTests(c: MasterModule) extends PeekPokeTester(c) {
    // }
 
    val pc = 0x7fff3028
-   val offset = 5
    val action = 2
-   val reward = 12
 
    // update QVStore first
-   updateQVStore(pc, offset, action, 12)
-   updateQVStore(pc, offset, action, 10)
+   updateQVStore(pc, 5, action, 6)
+   updateQVStore(pc, 5, action, 10)
+   updateQVStore(pc, 5, action, 8)
+   updateQVStore(pc, 5, action, 12)
 
    // get action recommedation from QVStore
    // queryQVStore(pc, offset, action)

@@ -13,9 +13,9 @@ class MasterModule extends Module
       val sigUpdate = Input(Bool())
       val sigQuery = Input(Bool())
       // query inputs/outputs
-      val qPC = Input(UInt(32.W))
-      val qOffset = Input(UInt(6.W))
-      val qAction = Output(UInt(4.W))
+      // val qPC = Input(UInt(32.W))
+      // val qOffset = Input(UInt(6.W))
+      // val qAction = Output(UInt(4.W))
       // update input/outputs
       val uPC = Input(UInt(32.W))
       val uOffset = Input(UInt(6.W))
@@ -25,7 +25,7 @@ class MasterModule extends Module
 
    val igModule = Module(new IndexGen()) // index generator
    val plane = Module(new Plane()) // plane
-   val max3 = Module(new MaxN()) // max reducer
+   // val max3 = Module(new MaxN()) // max reducer
 
    // Init
    igModule.io.pc := 0.U
@@ -39,15 +39,15 @@ class MasterModule extends Module
    plane.io.wrcol := 0.U
    plane.io.wrdata := 0.U
    plane.io.we := 0.U
-   max3.io.nums(0) := 0.U
-   max3.io.nums(1) := 0.U
-   max3.io.nums(2) := 0.U
-   max3.io.ids(0) := 0.U
-   max3.io.ids(1) := 0.U
-   max3.io.ids(2) := 0.U
+   // max3.io.nums(0) := 0.U
+   // max3.io.nums(1) := 0.U
+   // max3.io.nums(2) := 0.U
+   // max3.io.ids(0) := 0.U
+   // max3.io.ids(1) := 0.U
+   // max3.io.ids(2) := 0.U
 
    // query phase
-   io.qAction := 0.U
+   // io.qAction := 0.U
    // when(io.sigQuery)
    // {
    //    printf("[QUERY] pc %x offset %d action %d\n", io.qPC, io.qOffset, io.qAction)
@@ -93,32 +93,32 @@ class MasterModule extends Module
    // }
 
    // update phase
+   // val (s_idle :: s_indexgen :: s_planeread :: s_compute :: s_planewrite :: Nil) = Enum(5)
+
    when(io.sigUpdate)
    {
       printf("[UPDATE] pc %x offset %d action %d reward %d\n", io.uPC, io.uOffset, io.uAction, io.uReward)
-      var index = RegInit(0.U(7.W))
-      var qval = RegInit(0.U(16.W))
-      var newVal = RegInit(0.U(16.W))
 
-      igModule.io.pc := io.qPC
-      igModule.io.offset := io.qOffset
-      index := igModule.io.index
-      printf("[UPDATE] index %d\n", index)
-
-      plane.io.rdrow0 := index
+      igModule.io.pc := io.uPC
+      igModule.io.offset := io.uOffset
+      // ===================== read stage ==================== //
+      plane.io.rdrow0 := igModule.io.index
       plane.io.rdcol0 := io.uAction
       plane.io.rdrow1 := 0.U // dummy
       plane.io.rdcol1 := 0.U // dummy
       plane.io.re := true.B
-      qval := plane.io.rddata0
-      printf("[UPDATE] old qval %d\n", qval)
+      val state_index = RegNext(igModule.io.index)
+      val action_index = RegNext(io.uAction)
+      val updated_qval = RegNext((plane.io.rddata0 >> 1) + io.uReward)
+      printf("[UPDATE READ] row_index %d col_index %d value-read %d\n", igModule.io.index, io.uAction, plane.io.rddata0)
+      printf("[UPDATE] registered qval %d\n", updated_qval)
 
-      newVal := (qval << 2) + io.uReward
-      printf("[UPDATE] new qval %d\n", newVal)
-
-      plane.io.wrrow := index
-      plane.io.wrcol := io.uAction
-      plane.io.wrdata := newVal
+      // ===================== write stage ==================== //
+      plane.io.wrrow := state_index
+      plane.io.wrcol := action_index
+      plane.io.wrdata := 42.U
       plane.io.we := true.B
+      printf("[UPDATE WRITE] row_index %d col_index %d value-written %d\n", plane.io.wrrow, plane.io.wrcol, plane.io.wrdata)
+      printf("===================================================\n\n\n")
    }
 }
