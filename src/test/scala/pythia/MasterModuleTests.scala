@@ -22,8 +22,6 @@ class MasterModuleTests(c: MasterModule) extends PeekPokeTester(c) {
       step(8)
       expect(c.io.qAction, action)
       poke(c.io.sigQuery, 0)
-      // val act = peek(c.io.qAction).toInt
-      // printf("recommended action %d, expected %d", act, action)
    }
 
    val pc = 0x7fff3028

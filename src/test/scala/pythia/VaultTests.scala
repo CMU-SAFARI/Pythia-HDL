@@ -2,8 +2,8 @@ package pythia
 
 import chisel3.iotesters.{PeekPokeTester, Driver, ChiselFlatSpec}
 
-class ValutTests(c: Valut) extends PeekPokeTester(c) {
-   def ValutRead(row0_p0:Int, row0_p1:Int, row0_p2:Int, col0:Int, data0:Int,
+class VaultTests(c: Vault) extends PeekPokeTester(c) {
+   def VaultRead(row0_p0:Int, row0_p1:Int, row0_p2:Int, col0:Int, data0:Int,
                   row1_p0:Int, row1_p1:Int, row1_p2:Int, col1:Int, data1:Int) = {
      poke(c.io.rdrow0(0), row0_p0)
      poke(c.io.rdrow0(1), row0_p1)
@@ -22,7 +22,7 @@ class ValutTests(c: Valut) extends PeekPokeTester(c) {
      expect(c.io.rddata1(1), data1)
      expect(c.io.rddata1(2), data1)
    }
-   def ValutWrite(row_p0:Int, row_p1:Int, row_p2:Int, col:Int, data:Int) = {
+   def VaultWrite(row_p0:Int, row_p1:Int, row_p2:Int, col:Int, data:Int) = {
      poke(c.io.wrrow(0), row_p0)
      poke(c.io.wrrow(1), row_p1)
      poke(c.io.wrrow(2), row_p2)
@@ -35,9 +35,9 @@ class ValutTests(c: Valut) extends PeekPokeTester(c) {
    }
    def test(row0_p0:Int, row0_p1:Int, row0_p2:Int, col0:Int, data0:Int,
                   row1_p0:Int, row1_p1:Int, row1_p2:Int, col1:Int, data1:Int) = {
-      ValutWrite(row0_p0, row0_p1, row0_p2, col0, data0)
-      ValutWrite(row1_p0, row1_p1, row1_p2, col1, data1)
-      ValutRead(row0_p0, row0_p1, row0_p2, col0, data0, row1_p0, row1_p1, row1_p2, col1, data1)
+      VaultWrite(row0_p0, row0_p1, row0_p2, col0, data0)
+      VaultWrite(row1_p0, row1_p1, row1_p2, col1, data1)
+      VaultRead(row0_p0, row0_p1, row0_p2, col0, data0, row1_p0, row1_p1, row1_p2, col1, data1)
    }
 
    test(2,3,9,5,10, 4,6,7,1,18)
@@ -47,11 +47,11 @@ class ValutTests(c: Valut) extends PeekPokeTester(c) {
    test(1,100,69,27,785, 5,111,51,19,2308)
 }
 
-class ValutTester extends ChiselFlatSpec {
-  behavior of "Valut"
+class VaultTester extends ChiselFlatSpec {
+  behavior of "Vault"
   backends foreach {backend =>
     it should s"correctly add randomly generated numbers and show carry in $backend" in {
-      Driver(() => new Valut, backend)((c) => new ValutTests(c)) should be (true)
+      Driver(() => new Vault, backend)((c) => new VaultTests(c)) should be (true)
     }
   }
 }

@@ -9,7 +9,7 @@ package pythia
 import chisel3._
 import chisel3.util._
 
-class Valut extends Module {
+class Vault extends Module {
    val io = IO(new Bundle{
       val re = Input(Bool())
       val rdrow0 = Input(Vec(3, UInt(7.W)))

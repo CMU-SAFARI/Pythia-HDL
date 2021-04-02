@@ -25,7 +25,7 @@ class MasterModule extends Module
 
    val igModule = Module(new IndexGen()) // index generator
    // val plane = Module(new Plane()) // plane
-   val vault = Module(new Valut()) // valut
+   val vault = Module(new Vault()) // vault
    val max3 = Module(new MaxN()) // max reducer
 
    // machine states
@@ -211,3 +211,7 @@ class MasterModule extends Module
    }
    // *********************************************************************//
 }
+
+// object MasterModule extends App {
+//    chisel3.Driver.execute(args, () => new MasterModule)
+// }
