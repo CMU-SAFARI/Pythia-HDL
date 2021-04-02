@@ -26,6 +26,8 @@ class MasterModule extends Module
    val igModule = Module(new IndexGen()) // index generator
    // val plane = Module(new Plane()) // plane
    val vault = Module(new Vault()) // vault
+   val qvcompare0 = Module(new QVCompare()) // Q-value comparator
+   val qvcompare1 = Module(new QVCompare()) // Q-value comparator
    val max3 = Module(new MaxN()) // max reducer
 
    // machine states
@@ -102,7 +104,60 @@ class MasterModule extends Module
    vault.io.we := false.B
    //=====================================================================//
 
-   //===================== Connections for Max Module =====================//
+   //===================== Connections for QVCompare Module0 =====================//
+   when(io.sigQuery){
+      when(state === s_idle)  {qvcompare0.io.qv0_p0 := 0.U}
+      .otherwise              {qvcompare0.io.qv0_p0 := vault.io.rddata0(0)}
+   }.otherwise{
+      qvcompare0.io.qv0_p0 := 0.U
+   }
+   when(io.sigQuery){
+      when(state === s_idle)  {qvcompare0.io.qv0_p1 := 0.U}
+      .otherwise              {qvcompare0.io.qv0_p1 := vault.io.rddata0(1)}
+   }.otherwise{
+      qvcompare0.io.qv0_p1 := 0.U
+   }
+   when(io.sigQuery){
+      when(state === s_idle)  {qvcompare0.io.qv0_p2 := 0.U}
+      .otherwise              {qvcompare0.io.qv0_p2 := vault.io.rddata0(2)}
+   }.otherwise{
+      qvcompare0.io.qv0_p2 := 0.U
+   }
+   // qvcompare0.io.qv0_p0 := 0.U
+   // qvcompare0.io.qv0_p1 := 0.U
+   // qvcompare0.io.qv0_p2 := 0.U
+   qvcompare0.io.qv1_p0 := 0.U
+   qvcompare0.io.qv1_p1 := 0.U
+   qvcompare0.io.qv1_p2 := 0.U
+   //============================================================================//
+
+   //===================== Connections for QVCompare Module1 =====================//
+   when(io.sigQuery){
+      when(state === s_idle)  {qvcompare1.io.qv0_p0 := 0.U}
+      .otherwise              {qvcompare1.io.qv0_p0 := vault.io.rddata1(0)}
+   }.otherwise{
+      qvcompare1.io.qv0_p0 := 0.U
+   }
+   when(io.sigQuery){
+      when(state === s_idle)  {qvcompare1.io.qv0_p1 := 0.U}
+      .otherwise              {qvcompare1.io.qv0_p1 := vault.io.rddata1(1)}
+   }.otherwise{
+      qvcompare1.io.qv0_p1 := 0.U
+   }
+   when(io.sigQuery){
+      when(state === s_idle)  {qvcompare1.io.qv0_p2 := 0.U}
+      .otherwise              {qvcompare1.io.qv0_p2 := vault.io.rddata1(2)}
+   }.otherwise{
+      qvcompare1.io.qv0_p2 := 0.U
+   }
+
+   // Add delta path signature's QV values here
+   qvcompare1.io.qv1_p0 := 0.U
+   qvcompare1.io.qv1_p1 := 0.U
+   qvcompare1.io.qv1_p2 := 0.U
+   //============================================================================//
+
+   //========================= Connections for Max Module =======================//
    when(io.sigQuery){
       when(state === s_idle) {max3.io.nums(0) := 0.U}
       .otherwise {max3.io.nums(0) := RegNext(max3.io.maxNum)}
@@ -110,12 +165,14 @@ class MasterModule extends Module
       max3.io.nums(0) := 0.U
    }
    when(io.sigQuery){
-      max3.io.nums(1) := vault.io.rddata0(0) + vault.io.rddata0(1) + vault.io.rddata0(2) // sum aggregation across Q-values from each plane
+      // max3.io.nums(1) := vault.io.rddata0(0) + vault.io.rddata0(1) + vault.io.rddata0(2) // sum aggregation across Q-values from each plane
+      max3.io.nums(1) := qvcompare0.io.qv_out
    }.otherwise{
       max3.io.nums(1) := 0.U
    }
    when(io.sigQuery){
-      max3.io.nums(2) := vault.io.rddata1(0) + vault.io.rddata1(1) + vault.io.rddata1(2) // sum aggregation across Q-values from each plane
+      // max3.io.nums(2) := vault.io.rddata1(0) + vault.io.rddata1(1) + vault.io.rddata1(2) // sum aggregation across Q-values from each plane
+      max3.io.nums(2) := qvcompare1.io.qv_out
    }.otherwise{
       max3.io.nums(2) := 0.U
    }
@@ -163,7 +220,7 @@ class MasterModule extends Module
    // *********************** STATE MACHINE DEFINITION ********************//
    // *********************************************************************//
    when(state === s_idle){
-      printf("[IDLE] Idle state\n")
+      printf("[IDLE] ================ CHILLING HOMES ===============\n")
       vault.io.re := false.B
       vault.io.we := false.B
       when (io.sigUpdate){
