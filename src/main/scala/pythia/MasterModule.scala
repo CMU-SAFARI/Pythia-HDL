@@ -24,7 +24,8 @@ class MasterModule extends Module
    })
 
    val igModule = Module(new IndexGen()) // index generator
-   val plane = Module(new Plane()) // plane
+   // val plane = Module(new Plane()) // plane
+   val vault = Module(new Valut()) // valut
    val max3 = Module(new MaxN()) // max reducer
 
    // machine states
@@ -43,59 +44,62 @@ class MasterModule extends Module
 
    //=================== Connections for Plane Module ====================//
    when(io.sigUpdate){
-      plane.io.rdrow0 := igModule.io.index
+      // vault.io.rdrow0 := igModule.io.index
+      vault.io.rdrow0(0) := igModule.io.index; vault.io.rdrow0(1) := igModule.io.index; vault.io.rdrow0(2) := igModule.io.index;
    }.elsewhen(io.sigQuery){
-      plane.io.rdrow0 := igModule.io.index
+      vault.io.rdrow0(0) := igModule.io.index; vault.io.rdrow0(1) := igModule.io.index; vault.io.rdrow0(2) := igModule.io.index;
    }.otherwise{
-      plane.io.rdrow0 := 0.U
+      vault.io.rdrow0(0) := 0.U; vault.io.rdrow0(1) := 0.U; vault.io.rdrow0(2) := 0.U;
    }
 
    when(io.sigUpdate){
-      plane.io.rdcol0 := io.uAction
+      vault.io.rdcol0 := io.uAction
    }.elsewhen(io.sigQuery){
-      when(state === s_query_read2)          { plane.io.rdcol0 := 0.U }
-      .elsewhen(state === s_query_read4)     { plane.io.rdcol0 := 2.U }
-      .elsewhen(state === s_query_read6)     { plane.io.rdcol0 := 4.U }
-      .elsewhen(state === s_query_read8)     { plane.io.rdcol0 := 6.U }
-      .elsewhen(state === s_query_read10)    { plane.io.rdcol0 := 8.U }
-      .elsewhen(state === s_query_read12)    { plane.io.rdcol0 := 10.U }
-      .elsewhen(state === s_query_read14)    { plane.io.rdcol0 := 12.U }
-      .elsewhen(state === s_query_read16)    { plane.io.rdcol0 := 14.U }
-      .otherwise                             { plane.io.rdcol0 := 0.U }
+      when(state === s_query_read2)          { vault.io.rdcol0 := 0.U }
+      .elsewhen(state === s_query_read4)     { vault.io.rdcol0 := 2.U }
+      .elsewhen(state === s_query_read6)     { vault.io.rdcol0 := 4.U }
+      .elsewhen(state === s_query_read8)     { vault.io.rdcol0 := 6.U }
+      .elsewhen(state === s_query_read10)    { vault.io.rdcol0 := 8.U }
+      .elsewhen(state === s_query_read12)    { vault.io.rdcol0 := 10.U }
+      .elsewhen(state === s_query_read14)    { vault.io.rdcol0 := 12.U }
+      .elsewhen(state === s_query_read16)    { vault.io.rdcol0 := 14.U }
+      .otherwise                             { vault.io.rdcol0 := 0.U }
    }.otherwise{
-      plane.io.rdcol0 := 0.U
+      vault.io.rdcol0 := 0.U
    }
 
    when(io.sigUpdate){
-      plane.io.rdrow1 := 0.U
+      vault.io.rdrow1(0) := 0.U; vault.io.rdrow1(1) := 0.U; vault.io.rdrow1(2) := 0.U;
    }.elsewhen(io.sigQuery){
-      plane.io.rdrow1 := igModule.io.index
+      vault.io.rdrow1(0) := igModule.io.index; vault.io.rdrow1(1) := igModule.io.index; vault.io.rdrow1(2) := igModule.io.index;
    }.otherwise{
-      plane.io.rdrow1 := 0.U
+      vault.io.rdrow1(0) := 0.U; vault.io.rdrow1(1) := 0.U; vault.io.rdrow1(2) := 0.U;
    }
 
    when(io.sigUpdate){
-      plane.io.rdcol1 := 0.U
+      vault.io.rdcol1 := 0.U
    }.elsewhen(io.sigQuery){
-      when(state === s_query_read2)          { plane.io.rdcol1 := 1.U }
-      .elsewhen(state === s_query_read4)     { plane.io.rdcol1 := 3.U }
-      .elsewhen(state === s_query_read6)     { plane.io.rdcol1 := 5.U }
-      .elsewhen(state === s_query_read8)     { plane.io.rdcol1 := 7.U }
-      .elsewhen(state === s_query_read10)    { plane.io.rdcol1 := 9.U }
-      .elsewhen(state === s_query_read12)    { plane.io.rdcol1 := 11.U }
-      .elsewhen(state === s_query_read14)    { plane.io.rdcol1 := 13.U }
-      .elsewhen(state === s_query_read16)    { plane.io.rdcol1 := 15.U }
-      .otherwise                             { plane.io.rdcol1 := 0.U }
+      when(state === s_query_read2)          { vault.io.rdcol1 := 1.U }
+      .elsewhen(state === s_query_read4)     { vault.io.rdcol1 := 3.U }
+      .elsewhen(state === s_query_read6)     { vault.io.rdcol1 := 5.U }
+      .elsewhen(state === s_query_read8)     { vault.io.rdcol1 := 7.U }
+      .elsewhen(state === s_query_read10)    { vault.io.rdcol1 := 9.U }
+      .elsewhen(state === s_query_read12)    { vault.io.rdcol1 := 11.U }
+      .elsewhen(state === s_query_read14)    { vault.io.rdcol1 := 13.U }
+      .elsewhen(state === s_query_read16)    { vault.io.rdcol1 := 15.U }
+      .otherwise                             { vault.io.rdcol1 := 0.U }
    }.otherwise{
-      plane.io.rdcol1 := 0.U
+      vault.io.rdcol1 := 0.U
    }
 
-   plane.io.re := false.B
+   vault.io.re := false.B
 
-   plane.io.wrrow := RegEnable(igModule.io.index, io.sigUpdate)
-   plane.io.wrcol := RegEnable(io.uAction, io.sigUpdate)
-   plane.io.wrdata := RegEnable((plane.io.rddata0 >> 1) + update_reward, state === s_update_planeR)
-   plane.io.we := false.B
+   vault.io.wrrow(0) := RegEnable(igModule.io.index, io.sigUpdate); vault.io.wrrow(1) := RegEnable(igModule.io.index, io.sigUpdate); vault.io.wrrow(2) := RegEnable(igModule.io.index, io.sigUpdate);
+   vault.io.wrcol := RegEnable(io.uAction, io.sigUpdate)
+   vault.io.wrdata(0) := RegEnable((vault.io.rddata0(0) >> 1) + update_reward, state === s_update_planeR)
+   vault.io.wrdata(1) := RegEnable((vault.io.rddata0(1) >> 1) + update_reward, state === s_update_planeR)
+   vault.io.wrdata(2) := RegEnable((vault.io.rddata0(2) >> 1) + update_reward, state === s_update_planeR)
+   vault.io.we := false.B
    //=====================================================================//
 
    //===================== Connections for Max Module =====================//
@@ -106,12 +110,12 @@ class MasterModule extends Module
       max3.io.nums(0) := 0.U
    }
    when(io.sigQuery){
-      max3.io.nums(1) := plane.io.rddata0
+      max3.io.nums(1) := vault.io.rddata0(0) + vault.io.rddata0(1) + vault.io.rddata0(2) // sum aggregation across Q-values from each plane
    }.otherwise{
       max3.io.nums(1) := 0.U
    }
    when(io.sigQuery){
-      max3.io.nums(2) := plane.io.rddata1
+      max3.io.nums(2) := vault.io.rddata1(0) + vault.io.rddata1(1) + vault.io.rddata1(2) // sum aggregation across Q-values from each plane
    }.otherwise{
       max3.io.nums(2) := 0.U
    }
@@ -160,8 +164,8 @@ class MasterModule extends Module
    // *********************************************************************//
    when(state === s_idle){
       printf("[IDLE] Idle state\n")
-      plane.io.re := false.B
-      plane.io.we := false.B
+      vault.io.re := false.B
+      vault.io.we := false.B
       when (io.sigUpdate){
          state := s_update_planeR
       }.elsewhen(io.sigQuery){
@@ -169,23 +173,31 @@ class MasterModule extends Module
       }
    }
    .elsewhen(state === s_update_planeR){
-      plane.io.re := true.B // read the old value from plane
-      plane.io.we := false.B
+      vault.io.re := true.B // read the old value from plane
+      vault.io.we := false.B
       state := s_update_planeW
-      printf("[UPDATE-PLANE-R] row %d col %d value-read %d\n", plane.io.rdrow0, plane.io.rdcol0, plane.io.rddata0)
+      printf("[UPDATE-VAULT-R-PLANE-0] row %d col %d value-read %d\n", vault.io.rdrow0(0), vault.io.rdcol0, vault.io.rddata0(0))
+      printf("[UPDATE-VAULT-R-PLANE-1] row %d col %d value-read %d\n", vault.io.rdrow0(1), vault.io.rdcol0, vault.io.rddata0(1))
+      printf("[UPDATE-VAULT-R-PLANE-2] row %d col %d value-read %d\n", vault.io.rdrow0(2), vault.io.rdcol0, vault.io.rddata0(2))
    }
    .elsewhen(state === s_update_planeW){
-      plane.io.re := false.B
-      plane.io.we := true.B // write the new value
+      vault.io.re := false.B
+      vault.io.we := true.B // write the new value
       state := s_idle
-      printf("[UPDATE-PLANE-W] row %d col %d value-written %d\n", plane.io.wrrow, plane.io.wrcol, plane.io.wrdata)
+      printf("[UPDATE-VAULT-W-PLANE-0] row %d col %d value-written %d\n", vault.io.wrrow(0), vault.io.wrcol, vault.io.wrdata(0))
+      printf("[UPDATE-VAULT-W-PLANE-1] row %d col %d value-written %d\n", vault.io.wrrow(1), vault.io.wrcol, vault.io.wrdata(1))
+      printf("[UPDATE-VAULT-W-PLANE-2] row %d col %d value-written %d\n", vault.io.wrrow(2), vault.io.wrcol, vault.io.wrdata(2))
    }
    // query state transitions
    .elsewhen(state === s_query_read2 || state === s_query_read4 || state === s_query_read6 || state === s_query_read8 || state === s_query_read10 || state === s_query_read12 || state === s_query_read14 || state === s_query_read16){
-      plane.io.re := true.B
-      printf("[QUERY-PLANE] row0 %d col0 %d val0 %d\n", plane.io.rdrow0, plane.io.rdcol0, plane.io.rddata0)
-      printf("[QUERY-PLANE] row1 %d col1 %d val1 %d\n", plane.io.rdrow1, plane.io.rdcol1, plane.io.rddata1)
-      printf("[QUERY-PLANE] max3 %d maxId %d\n", max3.io.maxNum, max3.io.maxId)
+      vault.io.re := true.B
+      printf("[QUERY-VALUT-PLANE-0] row0 %d col0 %d val0 %d\n", vault.io.rdrow0(0), vault.io.rdcol0, vault.io.rddata0(0))
+      printf("[QUERY-VALUT-PLANE-1] row0 %d col0 %d val0 %d\n", vault.io.rdrow0(1), vault.io.rdcol0, vault.io.rddata0(1))
+      printf("[QUERY-VALUT-PLANE-2] row0 %d col0 %d val0 %d\n", vault.io.rdrow0(2), vault.io.rdcol0, vault.io.rddata0(2))
+      printf("[QUERY-VALUT-PLANE-0] row1 %d col1 %d val1 %d\n", vault.io.rdrow1(0), vault.io.rdcol1, vault.io.rddata1(0))
+      printf("[QUERY-VALUT-PLANE-1] row1 %d col1 %d val1 %d\n", vault.io.rdrow1(1), vault.io.rdcol1, vault.io.rddata1(1))
+      printf("[QUERY-VALUT-PLANE-2] row1 %d col1 %d val1 %d\n", vault.io.rdrow1(2), vault.io.rdcol1, vault.io.rddata1(2))
+      printf("[QUERY-VAULT] max3 %d maxId %d\n", max3.io.maxNum, max3.io.maxId)
 
       when(state === s_query_read2)          { state := s_query_read4 }
       .elsewhen(state === s_query_read4)     { state := s_query_read6 }
