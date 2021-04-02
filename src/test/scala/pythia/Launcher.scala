@@ -31,6 +31,11 @@ object Launcher {
       Driver.execute(() => new MasterModule(), manager) {
         (c) => new MasterModuleTests(c)
       }
+    },
+    "QVCompare" -> { (manager: TesterOptionsManager) =>
+      Driver.execute(() => new QVCompare(), manager) {
+        (c) => new QVCompareTests(c)
+      }
     }
   )
 
