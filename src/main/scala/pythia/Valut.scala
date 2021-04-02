@@ -16,12 +16,12 @@ class Valut extends Module {
       val rdcol0 = Input(UInt(4.W))
       val rdrow1 = Input(Vec(3, UInt(7.W)))
       val rdcol1 = Input(UInt(4.W))
-      val rddata0 = Output(UInt(16.W))
-      val rddata1 = Output(UInt(16.W))
+      val rddata0 = Output(Vec(3, UInt(16.W)))
+      val rddata1 = Output(Vec(3, UInt(16.W)))
       val we = Input(Bool())
       val wrrow = Input(Vec(3, UInt(7.W)))
       val wrcol = Input(UInt(4.W))
-      val wrdata = Input(UInt(16.W))
+      val wrdata = Input(Vec(3, UInt(16.W)))
    })
 
    // constituent planes
@@ -47,23 +47,26 @@ class Valut extends Module {
    plane2.io.rdcol1 := io.rdcol1
    plane2.io.re     := io.re
 
-   // For each port, the final read value returned by the vault
-   // will be the sum of value returned by each constituent port
-   io.rddata0 := plane0.io.rddata0 + plane1.io.rddata0 + plane2.io.rddata0
-   io.rddata1 := plane0.io.rddata1 + plane1.io.rddata1 + plane2.io.rddata1
+   // Return a vector of read data
+   io.rddata0(0) := plane0.io.rddata0
+   io.rddata0(1) := plane1.io.rddata0
+   io.rddata0(2) := plane2.io.rddata0
+   io.rddata1(0) := plane0.io.rddata1
+   io.rddata1(1) := plane1.io.rddata1
+   io.rddata1(2) := plane2.io.rddata1
 
    plane0.io.wrrow  := io.wrrow(0)
    plane0.io.wrcol  := io.wrcol
-   plane0.io.wrdata := io.wrdata
+   plane0.io.wrdata := io.wrdata(0)
    plane0.io.we     := io.we
 
    plane1.io.wrrow  := io.wrrow(1)
    plane1.io.wrcol  := io.wrcol
-   plane1.io.wrdata := io.wrdata
+   plane1.io.wrdata := io.wrdata(1)
    plane1.io.we     := io.we
 
    plane2.io.wrrow  := io.wrrow(2)
    plane2.io.wrcol  := io.wrcol
-   plane2.io.wrdata := io.wrdata
+   plane2.io.wrdata := io.wrdata(2)
    plane2.io.we     := io.we
 }
