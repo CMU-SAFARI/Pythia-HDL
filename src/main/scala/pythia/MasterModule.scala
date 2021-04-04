@@ -15,21 +15,31 @@ class MasterModule extends Module
       // query inputs/outputs
       val qPC = Input(UInt(32.W))
       val qOffset = Input(UInt(6.W))
+      val qDeltaPath = Input(UInt(32.W))
       val qAction = Output(UInt(4.W))
       // update input/outputs
       val uPC = Input(UInt(32.W))
       val uOffset = Input(UInt(6.W))
+      val uDeltaPath = Input(UInt(32.W))
       val uAction = Input(UInt(4.W))
       val uReward = Input(UInt(8.W))
    })
 
+   // Modules for PC+Offset feature
    val pcoIndexGen0 = Module(new IndexGen(iType = 1, plane_offset = 0xdead)) // index generator
    val pcoIndexGen1 = Module(new IndexGen(iType = 1, plane_offset = 0xdada)) // index generator
    val pcoIndexGen2 = Module(new IndexGen(iType = 1, plane_offset = 0xdeaf)) // index generator
-   // val plane = Module(new Plane()) // plane
-   val vault = Module(new Vault()) // vault
-   val qvcompare0 = Module(new QVCompare()) // Q-value comparator
-   val qvcompare1 = Module(new QVCompare()) // Q-value comparator
+   val vault0 = Module(new Vault()) // vault
+
+   // Modules for delta_path feature
+   val dpIndexGen0 = Module(new IndexGen(iType = 1, plane_offset = 0xdead)) // index generator
+   val dpIndexGen1 = Module(new IndexGen(iType = 1, plane_offset = 0xdada)) // index generator
+   val dpIndexGen2 = Module(new IndexGen(iType = 1, plane_offset = 0xdeaf)) // index generator
+   val vault1 = Module(new Vault()) // vault
+
+   // Global modules
+   val qvcompare0 = Module(new QVCompare()) // Q-value comparator, one for each vault-read ports
+   val qvcompare1 = Module(new QVCompare()) // Q-value comparator, one for each vault-read ports
    val max3 = Module(new MaxN()) // max reducer
 
    // machine states
@@ -41,7 +51,7 @@ class MasterModule extends Module
 
    val update_reward = RegEnable(io.uReward, io.sigUpdate)
 
-   //=========== Connections for Index Generation Modules ============//
+   //=========== Connections for PC+Offset Index Generation Modules ============//
    pcoIndexGen0.io.pc := Mux(io.sigUpdate, io.uPC, io.qPC)
    pcoIndexGen0.io.offset := Mux(io.sigUpdate, io.uOffset, io.qOffset)
    pcoIndexGen0.io.delta_path <> DontCare
@@ -51,118 +61,224 @@ class MasterModule extends Module
    pcoIndexGen2.io.pc := Mux(io.sigUpdate, io.uPC, io.qPC)
    pcoIndexGen2.io.offset := Mux(io.sigUpdate, io.uOffset, io.qOffset)
    pcoIndexGen2.io.delta_path <> DontCare
-   //=================================================================//
+   //===========================================================================//
 
-   //=================== Connections for Vault Module ====================//
+   //========== Connections for Delta_path Index Generation Modules ============//
+   dpIndexGen0.io.pc <> DontCare
+   dpIndexGen0.io.offset <> DontCare
+   dpIndexGen0.io.delta_path := Mux(io.sigUpdate, io.uDeltaPath, io.qDeltaPath)
+   dpIndexGen1.io.pc <> DontCare
+   dpIndexGen1.io.offset <> DontCare
+   dpIndexGen1.io.delta_path := Mux(io.sigUpdate, io.uDeltaPath, io.qDeltaPath)
+   dpIndexGen2.io.pc <> DontCare
+   dpIndexGen2.io.offset <> DontCare
+   dpIndexGen2.io.delta_path := Mux(io.sigUpdate, io.uDeltaPath, io.qDeltaPath)
+   //===========================================================================//
+
+   //====================== Connections for PC+Offset Vault Module =======================//
    when(io.sigUpdate){
-      vault.io.rdrow0(0) := pcoIndexGen0.io.index; vault.io.rdrow0(1) := pcoIndexGen1.io.index; vault.io.rdrow0(2) := pcoIndexGen2.io.index;
+      vault0.io.rdrow0(0) := pcoIndexGen0.io.index; vault0.io.rdrow0(1) := pcoIndexGen1.io.index; vault0.io.rdrow0(2) := pcoIndexGen2.io.index;
    }.elsewhen(io.sigQuery){
-      vault.io.rdrow0(0) := pcoIndexGen0.io.index; vault.io.rdrow0(1) := pcoIndexGen1.io.index; vault.io.rdrow0(2) := pcoIndexGen2.io.index;
+      vault0.io.rdrow0(0) := pcoIndexGen0.io.index; vault0.io.rdrow0(1) := pcoIndexGen1.io.index; vault0.io.rdrow0(2) := pcoIndexGen2.io.index;
    }.otherwise{
-      vault.io.rdrow0(0) := 0.U; vault.io.rdrow0(1) := 0.U; vault.io.rdrow0(2) := 0.U;
+      vault0.io.rdrow0(0) := 0.U; vault0.io.rdrow0(1) := 0.U; vault0.io.rdrow0(2) := 0.U;
    }
 
    when(io.sigUpdate){
-      vault.io.rdcol0 := io.uAction
+      vault0.io.rdcol0 := io.uAction
    }.elsewhen(io.sigQuery){
-      when(state === s_query_read2)          { vault.io.rdcol0 := 0.U }
-      .elsewhen(state === s_query_read4)     { vault.io.rdcol0 := 2.U }
-      .elsewhen(state === s_query_read6)     { vault.io.rdcol0 := 4.U }
-      .elsewhen(state === s_query_read8)     { vault.io.rdcol0 := 6.U }
-      .elsewhen(state === s_query_read10)    { vault.io.rdcol0 := 8.U }
-      .elsewhen(state === s_query_read12)    { vault.io.rdcol0 := 10.U }
-      .elsewhen(state === s_query_read14)    { vault.io.rdcol0 := 12.U }
-      .elsewhen(state === s_query_read16)    { vault.io.rdcol0 := 14.U }
-      .otherwise                             { vault.io.rdcol0 := 0.U }
+      when(state === s_query_read2)          { vault0.io.rdcol0 := 0.U }
+      .elsewhen(state === s_query_read4)     { vault0.io.rdcol0 := 2.U }
+      .elsewhen(state === s_query_read6)     { vault0.io.rdcol0 := 4.U }
+      .elsewhen(state === s_query_read8)     { vault0.io.rdcol0 := 6.U }
+      .elsewhen(state === s_query_read10)    { vault0.io.rdcol0 := 8.U }
+      .elsewhen(state === s_query_read12)    { vault0.io.rdcol0 := 10.U }
+      .elsewhen(state === s_query_read14)    { vault0.io.rdcol0 := 12.U }
+      .elsewhen(state === s_query_read16)    { vault0.io.rdcol0 := 14.U }
+      .otherwise                             { vault0.io.rdcol0 := 0.U }
    }.otherwise{
-      vault.io.rdcol0 := 0.U
+      vault0.io.rdcol0 := 0.U
    }
 
    when(io.sigUpdate){
-      vault.io.rdrow1(0) := 0.U; vault.io.rdrow1(1) := 0.U; vault.io.rdrow1(2) := 0.U;
+      vault0.io.rdrow1(0) := 0.U; vault0.io.rdrow1(1) := 0.U; vault0.io.rdrow1(2) := 0.U;
    }.elsewhen(io.sigQuery){
-      vault.io.rdrow1(0) := pcoIndexGen0.io.index; vault.io.rdrow1(1) := pcoIndexGen1.io.index; vault.io.rdrow1(2) := pcoIndexGen2.io.index;
+      vault0.io.rdrow1(0) := pcoIndexGen0.io.index; vault0.io.rdrow1(1) := pcoIndexGen1.io.index; vault0.io.rdrow1(2) := pcoIndexGen2.io.index;
    }.otherwise{
-      vault.io.rdrow1(0) := 0.U; vault.io.rdrow1(1) := 0.U; vault.io.rdrow1(2) := 0.U;
+      vault0.io.rdrow1(0) := 0.U; vault0.io.rdrow1(1) := 0.U; vault0.io.rdrow1(2) := 0.U;
    }
 
    when(io.sigUpdate){
-      vault.io.rdcol1 := 0.U
+      vault0.io.rdcol1 := 0.U
    }.elsewhen(io.sigQuery){
-      when(state === s_query_read2)          { vault.io.rdcol1 := 1.U }
-      .elsewhen(state === s_query_read4)     { vault.io.rdcol1 := 3.U }
-      .elsewhen(state === s_query_read6)     { vault.io.rdcol1 := 5.U }
-      .elsewhen(state === s_query_read8)     { vault.io.rdcol1 := 7.U }
-      .elsewhen(state === s_query_read10)    { vault.io.rdcol1 := 9.U }
-      .elsewhen(state === s_query_read12)    { vault.io.rdcol1 := 11.U }
-      .elsewhen(state === s_query_read14)    { vault.io.rdcol1 := 13.U }
-      .elsewhen(state === s_query_read16)    { vault.io.rdcol1 := 15.U }
-      .otherwise                             { vault.io.rdcol1 := 0.U }
+      when(state === s_query_read2)          { vault0.io.rdcol1 := 1.U }
+      .elsewhen(state === s_query_read4)     { vault0.io.rdcol1 := 3.U }
+      .elsewhen(state === s_query_read6)     { vault0.io.rdcol1 := 5.U }
+      .elsewhen(state === s_query_read8)     { vault0.io.rdcol1 := 7.U }
+      .elsewhen(state === s_query_read10)    { vault0.io.rdcol1 := 9.U }
+      .elsewhen(state === s_query_read12)    { vault0.io.rdcol1 := 11.U }
+      .elsewhen(state === s_query_read14)    { vault0.io.rdcol1 := 13.U }
+      .elsewhen(state === s_query_read16)    { vault0.io.rdcol1 := 15.U }
+      .otherwise                             { vault0.io.rdcol1 := 0.U }
    }.otherwise{
-      vault.io.rdcol1 := 0.U
+      vault0.io.rdcol1 := 0.U
    }
 
-   vault.io.re := false.B
+   vault0.io.re := false.B
 
-   vault.io.wrrow(0) := RegEnable(pcoIndexGen0.io.index, io.sigUpdate); vault.io.wrrow(1) := RegEnable(pcoIndexGen1.io.index, io.sigUpdate); vault.io.wrrow(2) := RegEnable(pcoIndexGen2.io.index, io.sigUpdate);
-   vault.io.wrcol := RegEnable(io.uAction, io.sigUpdate)
-   vault.io.wrdata(0) := RegEnable((vault.io.rddata0(0) >> 1) + update_reward, state === s_update_planeR)
-   vault.io.wrdata(1) := RegEnable((vault.io.rddata0(1) >> 1) + update_reward, state === s_update_planeR)
-   vault.io.wrdata(2) := RegEnable((vault.io.rddata0(2) >> 1) + update_reward, state === s_update_planeR)
-   vault.io.we := false.B
-   //=====================================================================//
+   vault0.io.wrrow(0) := RegEnable(pcoIndexGen0.io.index, io.sigUpdate); vault0.io.wrrow(1) := RegEnable(pcoIndexGen1.io.index, io.sigUpdate); vault0.io.wrrow(2) := RegEnable(pcoIndexGen2.io.index, io.sigUpdate);
+   vault0.io.wrcol := RegEnable(io.uAction, io.sigUpdate)
+   vault0.io.wrdata(0) := RegEnable((vault0.io.rddata0(0) >> 1) + update_reward, state === s_update_planeR)
+   vault0.io.wrdata(1) := RegEnable((vault0.io.rddata0(1) >> 1) + update_reward, state === s_update_planeR)
+   vault0.io.wrdata(2) := RegEnable((vault0.io.rddata0(2) >> 1) + update_reward, state === s_update_planeR)
+   vault0.io.we := false.B
+   //======================================================================================//
+
+   //====================== Connections for Delta_path Vault Module =======================//
+   when(io.sigUpdate){
+      vault1.io.rdrow0(0) := dpIndexGen0.io.index; vault1.io.rdrow0(1) := dpIndexGen1.io.index; vault1.io.rdrow0(2) := dpIndexGen2.io.index;
+   }.elsewhen(io.sigQuery){
+      vault1.io.rdrow0(0) := dpIndexGen0.io.index; vault1.io.rdrow0(1) := dpIndexGen1.io.index; vault1.io.rdrow0(2) := dpIndexGen2.io.index;
+   }.otherwise{
+      vault1.io.rdrow0(0) := 0.U; vault1.io.rdrow0(1) := 0.U; vault1.io.rdrow0(2) := 0.U;
+   }
+
+   when(io.sigUpdate){
+      vault1.io.rdcol0 := io.uAction
+   }.elsewhen(io.sigQuery){
+      when(state === s_query_read2)          { vault1.io.rdcol0 := 0.U }
+      .elsewhen(state === s_query_read4)     { vault1.io.rdcol0 := 2.U }
+      .elsewhen(state === s_query_read6)     { vault1.io.rdcol0 := 4.U }
+      .elsewhen(state === s_query_read8)     { vault1.io.rdcol0 := 6.U }
+      .elsewhen(state === s_query_read10)    { vault1.io.rdcol0 := 8.U }
+      .elsewhen(state === s_query_read12)    { vault1.io.rdcol0 := 10.U }
+      .elsewhen(state === s_query_read14)    { vault1.io.rdcol0 := 12.U }
+      .elsewhen(state === s_query_read16)    { vault1.io.rdcol0 := 14.U }
+      .otherwise                             { vault1.io.rdcol0 := 0.U }
+   }.otherwise{
+      vault1.io.rdcol0 := 0.U
+   }
+
+   when(io.sigUpdate){
+      vault1.io.rdrow1(0) := 0.U; vault1.io.rdrow1(1) := 0.U; vault1.io.rdrow1(2) := 0.U;
+   }.elsewhen(io.sigQuery){
+      vault1.io.rdrow1(0) := dpIndexGen0.io.index; vault1.io.rdrow1(1) := dpIndexGen1.io.index; vault1.io.rdrow1(2) := dpIndexGen2.io.index;
+   }.otherwise{
+      vault1.io.rdrow1(0) := 0.U; vault1.io.rdrow1(1) := 0.U; vault1.io.rdrow1(2) := 0.U;
+   }
+
+   when(io.sigUpdate){
+      vault1.io.rdcol1 := 0.U
+   }.elsewhen(io.sigQuery){
+      when(state === s_query_read2)          { vault1.io.rdcol1 := 1.U }
+      .elsewhen(state === s_query_read4)     { vault1.io.rdcol1 := 3.U }
+      .elsewhen(state === s_query_read6)     { vault1.io.rdcol1 := 5.U }
+      .elsewhen(state === s_query_read8)     { vault1.io.rdcol1 := 7.U }
+      .elsewhen(state === s_query_read10)    { vault1.io.rdcol1 := 9.U }
+      .elsewhen(state === s_query_read12)    { vault1.io.rdcol1 := 11.U }
+      .elsewhen(state === s_query_read14)    { vault1.io.rdcol1 := 13.U }
+      .elsewhen(state === s_query_read16)    { vault1.io.rdcol1 := 15.U }
+      .otherwise                             { vault1.io.rdcol1 := 0.U }
+   }.otherwise{
+      vault1.io.rdcol1 := 0.U
+   }
+
+   vault1.io.re := false.B
+
+   vault1.io.wrrow(0) := RegEnable(dpIndexGen0.io.index, io.sigUpdate); vault1.io.wrrow(1) := RegEnable(dpIndexGen1.io.index, io.sigUpdate); vault1.io.wrrow(2) := RegEnable(dpIndexGen2.io.index, io.sigUpdate);
+   vault1.io.wrcol := RegEnable(io.uAction, io.sigUpdate)
+   vault1.io.wrdata(0) := RegEnable((vault1.io.rddata0(0) >> 1) + update_reward, state === s_update_planeR)
+   vault1.io.wrdata(1) := RegEnable((vault1.io.rddata0(1) >> 1) + update_reward, state === s_update_planeR)
+   vault1.io.wrdata(2) := RegEnable((vault1.io.rddata0(2) >> 1) + update_reward, state === s_update_planeR)
+   vault1.io.we := false.B
+   //=============================================================================//
 
    //===================== Connections for QVCompare Module0 =====================//
    when(io.sigQuery){
       when(state === s_idle)  {qvcompare0.io.qv0_p0 := 0.U}
-      .otherwise              {qvcompare0.io.qv0_p0 := vault.io.rddata0(0)}
+      .otherwise              {qvcompare0.io.qv0_p0 := vault0.io.rddata0(0)}
    }.otherwise{
       qvcompare0.io.qv0_p0 := 0.U
    }
    when(io.sigQuery){
       when(state === s_idle)  {qvcompare0.io.qv0_p1 := 0.U}
-      .otherwise              {qvcompare0.io.qv0_p1 := vault.io.rddata0(1)}
+      .otherwise              {qvcompare0.io.qv0_p1 := vault0.io.rddata0(1)}
    }.otherwise{
       qvcompare0.io.qv0_p1 := 0.U
    }
    when(io.sigQuery){
       when(state === s_idle)  {qvcompare0.io.qv0_p2 := 0.U}
-      .otherwise              {qvcompare0.io.qv0_p2 := vault.io.rddata0(2)}
+      .otherwise              {qvcompare0.io.qv0_p2 := vault0.io.rddata0(2)}
    }.otherwise{
       qvcompare0.io.qv0_p2 := 0.U
    }
-   // qvcompare0.io.qv0_p0 := 0.U
-   // qvcompare0.io.qv0_p1 := 0.U
-   // qvcompare0.io.qv0_p2 := 0.U
-   qvcompare0.io.qv1_p0 := 0.U
-   qvcompare0.io.qv1_p1 := 0.U
-   qvcompare0.io.qv1_p2 := 0.U
+
+   when(io.sigQuery){
+      when(state === s_idle)  {qvcompare0.io.qv1_p0 := 0.U}
+      .otherwise              {qvcompare0.io.qv1_p0 := vault1.io.rddata0(0)}
+   }.otherwise{
+      qvcompare0.io.qv1_p0 := 0.U
+   }
+   when(io.sigQuery){
+      when(state === s_idle)  {qvcompare0.io.qv1_p1 := 0.U}
+      .otherwise              {qvcompare0.io.qv1_p1 := vault1.io.rddata0(1)}
+   }.otherwise{
+      qvcompare0.io.qv1_p1 := 0.U
+   }
+   when(io.sigQuery){
+      when(state === s_idle)  {qvcompare0.io.qv1_p2 := 0.U}
+      .otherwise              {qvcompare0.io.qv1_p2 := vault1.io.rddata0(2)}
+   }.otherwise{
+      qvcompare0.io.qv1_p2 := 0.U
+   }
+   // Add delta path signature's QV values here
+   // qvcompare0.io.qv1_p0 := 0.U
+   // qvcompare0.io.qv1_p1 := 0.U
+   // qvcompare0.io.qv1_p2 := 0.U
    //============================================================================//
 
    //===================== Connections for QVCompare Module1 =====================//
    when(io.sigQuery){
       when(state === s_idle)  {qvcompare1.io.qv0_p0 := 0.U}
-      .otherwise              {qvcompare1.io.qv0_p0 := vault.io.rddata1(0)}
+      .otherwise              {qvcompare1.io.qv0_p0 := vault0.io.rddata1(0)}
    }.otherwise{
       qvcompare1.io.qv0_p0 := 0.U
    }
    when(io.sigQuery){
       when(state === s_idle)  {qvcompare1.io.qv0_p1 := 0.U}
-      .otherwise              {qvcompare1.io.qv0_p1 := vault.io.rddata1(1)}
+      .otherwise              {qvcompare1.io.qv0_p1 := vault0.io.rddata1(1)}
    }.otherwise{
       qvcompare1.io.qv0_p1 := 0.U
    }
    when(io.sigQuery){
       when(state === s_idle)  {qvcompare1.io.qv0_p2 := 0.U}
-      .otherwise              {qvcompare1.io.qv0_p2 := vault.io.rddata1(2)}
+      .otherwise              {qvcompare1.io.qv0_p2 := vault0.io.rddata1(2)}
    }.otherwise{
       qvcompare1.io.qv0_p2 := 0.U
    }
 
+   when(io.sigQuery){
+      when(state === s_idle)  {qvcompare1.io.qv1_p0 := 0.U}
+      .otherwise              {qvcompare1.io.qv1_p0 := vault1.io.rddata1(0)}
+   }.otherwise{
+      qvcompare1.io.qv1_p0 := 0.U
+   }
+   when(io.sigQuery){
+      when(state === s_idle)  {qvcompare1.io.qv1_p1 := 0.U}
+      .otherwise              {qvcompare1.io.qv1_p1 := vault1.io.rddata1(1)}
+   }.otherwise{
+      qvcompare1.io.qv1_p1 := 0.U
+   }
+   when(io.sigQuery){
+      when(state === s_idle)  {qvcompare1.io.qv1_p2 := 0.U}
+      .otherwise              {qvcompare1.io.qv1_p2 := vault1.io.rddata1(2)}
+   }.otherwise{
+      qvcompare1.io.qv1_p2 := 0.U
+   }
    // Add delta path signature's QV values here
-   qvcompare1.io.qv1_p0 := 0.U
-   qvcompare1.io.qv1_p1 := 0.U
-   qvcompare1.io.qv1_p2 := 0.U
+   // qvcompare1.io.qv1_p0 := 0.U
+   // qvcompare1.io.qv1_p1 := 0.U
+   // qvcompare1.io.qv1_p2 := 0.U
    //============================================================================//
 
    //========================= Connections for Max Module =======================//
@@ -173,13 +289,11 @@ class MasterModule extends Module
       max3.io.nums(0) := 0.U
    }
    when(io.sigQuery){
-      // max3.io.nums(1) := vault.io.rddata0(0) + vault.io.rddata0(1) + vault.io.rddata0(2) // sum aggregation across Q-values from each plane
       max3.io.nums(1) := qvcompare0.io.qv_out
    }.otherwise{
       max3.io.nums(1) := 0.U
    }
    when(io.sigQuery){
-      // max3.io.nums(2) := vault.io.rddata1(0) + vault.io.rddata1(1) + vault.io.rddata1(2) // sum aggregation across Q-values from each plane
       max3.io.nums(2) := qvcompare1.io.qv_out
    }.otherwise{
       max3.io.nums(2) := 0.U
@@ -229,8 +343,10 @@ class MasterModule extends Module
    // *********************************************************************//
    when(state === s_idle){
       printf("[IDLE] ================ CHILLING HOMES ===============\n")
-      vault.io.re := false.B
-      vault.io.we := false.B
+      vault0.io.re := false.B
+      vault0.io.we := false.B
+      vault1.io.re := false.B
+      vault1.io.we := false.B
       when (io.sigUpdate){
          state := s_update_planeR
       }.elsewhen(io.sigQuery){
@@ -238,31 +354,50 @@ class MasterModule extends Module
       }
    }
    .elsewhen(state === s_update_planeR){
-      vault.io.re := true.B // read the old value from plane
-      vault.io.we := false.B
+      vault0.io.re := true.B // read the old value from plane
+      vault0.io.we := false.B
+      vault1.io.re := true.B // read the old value from plane
+      vault1.io.we := false.B
       state := s_update_planeW
-      printf("[UPDATE-VAULT-R-PLANE-0] row %d col %d value-read %d\n", vault.io.rdrow0(0), vault.io.rdcol0, vault.io.rddata0(0))
-      printf("[UPDATE-VAULT-R-PLANE-1] row %d col %d value-read %d\n", vault.io.rdrow0(1), vault.io.rdcol0, vault.io.rddata0(1))
-      printf("[UPDATE-VAULT-R-PLANE-2] row %d col %d value-read %d\n", vault.io.rdrow0(2), vault.io.rdcol0, vault.io.rddata0(2))
+      printf("[UPDATE-VAULT0-R-PLANE-0] row %d col %d value-read %d\n", vault0.io.rdrow0(0), vault0.io.rdcol0, vault0.io.rddata0(0))
+      printf("[UPDATE-VAULT0-R-PLANE-1] row %d col %d value-read %d\n", vault0.io.rdrow0(1), vault0.io.rdcol0, vault0.io.rddata0(1))
+      printf("[UPDATE-VAULT0-R-PLANE-2] row %d col %d value-read %d\n", vault0.io.rdrow0(2), vault0.io.rdcol0, vault0.io.rddata0(2))
+      printf("[UPDATE-VAULT1-R-PLANE-0] row %d col %d value-read %d\n", vault1.io.rdrow0(0), vault1.io.rdcol0, vault1.io.rddata0(0))
+      printf("[UPDATE-VAULT1-R-PLANE-1] row %d col %d value-read %d\n", vault1.io.rdrow0(1), vault1.io.rdcol0, vault1.io.rddata0(1))
+      printf("[UPDATE-VAULT1-R-PLANE-2] row %d col %d value-read %d\n", vault1.io.rdrow0(2), vault1.io.rdcol0, vault1.io.rddata0(2))
    }
    .elsewhen(state === s_update_planeW){
-      vault.io.re := false.B
-      vault.io.we := true.B // write the new value
+      vault0.io.re := false.B
+      vault0.io.we := true.B // write the new value
+      vault1.io.re := false.B
+      vault1.io.we := true.B // write the new value
       state := s_idle
-      printf("[UPDATE-VAULT-W-PLANE-0] row %d col %d value-written %d\n", vault.io.wrrow(0), vault.io.wrcol, vault.io.wrdata(0))
-      printf("[UPDATE-VAULT-W-PLANE-1] row %d col %d value-written %d\n", vault.io.wrrow(1), vault.io.wrcol, vault.io.wrdata(1))
-      printf("[UPDATE-VAULT-W-PLANE-2] row %d col %d value-written %d\n", vault.io.wrrow(2), vault.io.wrcol, vault.io.wrdata(2))
+      printf("[UPDATE-VAULT0-W-PLANE-0] row %d col %d value-written %d\n", vault0.io.wrrow(0), vault0.io.wrcol, vault0.io.wrdata(0))
+      printf("[UPDATE-VAULT0-W-PLANE-1] row %d col %d value-written %d\n", vault0.io.wrrow(1), vault0.io.wrcol, vault0.io.wrdata(1))
+      printf("[UPDATE-VAULT0-W-PLANE-2] row %d col %d value-written %d\n", vault0.io.wrrow(2), vault0.io.wrcol, vault0.io.wrdata(2))
+      printf("[UPDATE-VAULT1-W-PLANE-0] row %d col %d value-written %d\n", vault1.io.wrrow(0), vault1.io.wrcol, vault1.io.wrdata(0))
+      printf("[UPDATE-VAULT1-W-PLANE-1] row %d col %d value-written %d\n", vault1.io.wrrow(1), vault1.io.wrcol, vault1.io.wrdata(1))
+      printf("[UPDATE-VAULT1-W-PLANE-2] row %d col %d value-written %d\n", vault1.io.wrrow(2), vault1.io.wrcol, vault1.io.wrdata(2))
    }
    // query state transitions
    .elsewhen(state === s_query_read2 || state === s_query_read4 || state === s_query_read6 || state === s_query_read8 || state === s_query_read10 || state === s_query_read12 || state === s_query_read14 || state === s_query_read16){
-      vault.io.re := true.B
-      printf("[QUERY-VALUT-PLANE-0] row0 %d col0 %d val0 %d\n", vault.io.rdrow0(0), vault.io.rdcol0, vault.io.rddata0(0))
-      printf("[QUERY-VALUT-PLANE-1] row0 %d col0 %d val0 %d\n", vault.io.rdrow0(1), vault.io.rdcol0, vault.io.rddata0(1))
-      printf("[QUERY-VALUT-PLANE-2] row0 %d col0 %d val0 %d\n", vault.io.rdrow0(2), vault.io.rdcol0, vault.io.rddata0(2))
-      printf("[QUERY-VALUT-PLANE-0] row1 %d col1 %d val1 %d\n", vault.io.rdrow1(0), vault.io.rdcol1, vault.io.rddata1(0))
-      printf("[QUERY-VALUT-PLANE-1] row1 %d col1 %d val1 %d\n", vault.io.rdrow1(1), vault.io.rdcol1, vault.io.rddata1(1))
-      printf("[QUERY-VALUT-PLANE-2] row1 %d col1 %d val1 %d\n", vault.io.rdrow1(2), vault.io.rdcol1, vault.io.rddata1(2))
-      printf("[QUERY-VAULT] max3 %d maxId %d\n", max3.io.maxNum, max3.io.maxId)
+      vault0.io.re := true.B
+      vault1.io.re := true.B
+      printf("[QUERY-VAULT0-PLANE-0] row0 %d col0 %d val0 %d\n", vault0.io.rdrow0(0), vault0.io.rdcol0, vault0.io.rddata0(0))
+      printf("[QUERY-VAULT0-PLANE-1] row0 %d col0 %d val0 %d\n", vault0.io.rdrow0(1), vault0.io.rdcol0, vault0.io.rddata0(1))
+      printf("[QUERY-VAULT0-PLANE-2] row0 %d col0 %d val0 %d\n", vault0.io.rdrow0(2), vault0.io.rdcol0, vault0.io.rddata0(2))
+      printf("[QUERY-VAULT0-PLANE-0] row1 %d col1 %d val1 %d\n", vault0.io.rdrow1(0), vault0.io.rdcol1, vault0.io.rddata1(0))
+      printf("[QUERY-VAULT0-PLANE-1] row1 %d col1 %d val1 %d\n", vault0.io.rdrow1(1), vault0.io.rdcol1, vault0.io.rddata1(1))
+      printf("[QUERY-VAULT0-PLANE-2] row1 %d col1 %d val1 %d\n", vault0.io.rdrow1(2), vault0.io.rdcol1, vault0.io.rddata1(2))
+
+      printf("[QUERY-VAULT1-PLANE-0] row0 %d col0 %d val0 %d\n", vault1.io.rdrow0(0), vault1.io.rdcol0, vault1.io.rddata0(0))
+      printf("[QUERY-VAULT1-PLANE-1] row0 %d col0 %d val0 %d\n", vault1.io.rdrow0(1), vault1.io.rdcol0, vault1.io.rddata0(1))
+      printf("[QUERY-VAULT1-PLANE-2] row0 %d col0 %d val0 %d\n", vault1.io.rdrow0(2), vault1.io.rdcol0, vault1.io.rddata0(2))
+      printf("[QUERY-VAULT1-PLANE-0] row1 %d col1 %d val1 %d\n", vault1.io.rdrow1(0), vault1.io.rdcol1, vault1.io.rddata1(0))
+      printf("[QUERY-VAULT1-PLANE-1] row1 %d col1 %d val1 %d\n", vault1.io.rdrow1(1), vault1.io.rdcol1, vault1.io.rddata1(1))
+      printf("[QUERY-VAULT1-PLANE-2] row1 %d col1 %d val1 %d\n", vault1.io.rdrow1(2), vault1.io.rdcol1, vault1.io.rddata1(2))
+
+      printf("[QUERY-VAULT0] max3 %d maxId %d\n", max3.io.maxNum, max3.io.maxId)
 
       when(state === s_query_read2)          { state := s_query_read4 }
       .elsewhen(state === s_query_read4)     { state := s_query_read6 }
@@ -276,7 +411,3 @@ class MasterModule extends Module
    }
    // *********************************************************************//
 }
-
-// object MasterModule extends App {
-//    chisel3.Driver.execute(args, () => new MasterModule)
-// }
