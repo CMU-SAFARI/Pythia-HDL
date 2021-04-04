@@ -23,9 +23,9 @@ class MasterModule extends Module
       val uReward = Input(UInt(8.W))
    })
 
-   val pcoIndexGen0 = Module(new IndexGen(plane_offset = 0xdead)) // index generator
-   val pcoIndexGen1 = Module(new IndexGen(plane_offset = 0xdada)) // index generator
-   val pcoIndexGen2 = Module(new IndexGen(plane_offset = 0xdeaf)) // index generator
+   val pcoIndexGen0 = Module(new IndexGen(iType = 1, plane_offset = 0xdead)) // index generator
+   val pcoIndexGen1 = Module(new IndexGen(iType = 1, plane_offset = 0xdada)) // index generator
+   val pcoIndexGen2 = Module(new IndexGen(iType = 1, plane_offset = 0xdeaf)) // index generator
    // val plane = Module(new Plane()) // plane
    val vault = Module(new Vault()) // vault
    val qvcompare0 = Module(new QVCompare()) // Q-value comparator
@@ -44,10 +44,13 @@ class MasterModule extends Module
    //=========== Connections for Index Generation Modules ============//
    pcoIndexGen0.io.pc := Mux(io.sigUpdate, io.uPC, io.qPC)
    pcoIndexGen0.io.offset := Mux(io.sigUpdate, io.uOffset, io.qOffset)
+   pcoIndexGen0.io.delta_path <> DontCare
    pcoIndexGen1.io.pc := Mux(io.sigUpdate, io.uPC, io.qPC)
    pcoIndexGen1.io.offset := Mux(io.sigUpdate, io.uOffset, io.qOffset)
+   pcoIndexGen1.io.delta_path <> DontCare
    pcoIndexGen2.io.pc := Mux(io.sigUpdate, io.uPC, io.qPC)
    pcoIndexGen2.io.offset := Mux(io.sigUpdate, io.uOffset, io.qOffset)
+   pcoIndexGen2.io.delta_path <> DontCare
    //=================================================================//
 
    //=================== Connections for Vault Module ====================//

@@ -8,14 +8,16 @@ package pythia
 import chisel3._
 import chisel3.util._
 
-class IndexGen (val plane_offset: Int) extends Module {
+class IndexGen (val iType:Int, val plane_offset:Int) extends Module {
   val io = IO(new Bundle {
     val pc = Input(UInt(32.W))
     val offset = Input(UInt(6.W))
+    val delta_path = Input(UInt(32.W))
     val index = Output(UInt(7.W))
   })
 
-  val temp = (Cat(io.pc, io.offset) ^ plane_offset.asUInt)
+  val raw_val = if(iType == 1) {Cat(io.pc, io.offset)} else {io.delta_path}
+  val temp = (raw_val ^ plane_offset.asUInt)
 
   // Robert Jenkin's 32 bit mix function for hashing
   val t0 = temp + (temp << 12)

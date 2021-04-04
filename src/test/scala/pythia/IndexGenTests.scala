@@ -19,7 +19,7 @@ class IndexGenTester extends ChiselFlatSpec {
   behavior of "IndexGen"
   backends foreach {backend =>
     it should s"correctly add randomly generated numbers and show carry in $backend" in {
-      Driver(() => new IndexGen(plane_offset = 0xdead), backend)((c) => new IndexGenTests(c)) should be (true)
+      Driver(() => new IndexGen(iType = 1, plane_offset = 0xdead), backend)((c) => new IndexGenTests(c)) should be (true)
     }
   }
 }
