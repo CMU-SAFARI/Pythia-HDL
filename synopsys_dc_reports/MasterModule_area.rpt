@@ -1,0 +1,48 @@
+ 
+****************************************
+Report : area
+Design : MasterModule
+Version: N-2017.09
+Date   : Sun Apr  4 07:23:17 2021
+****************************************
+
+Library(s) Used:
+
+    uk65lscllmvbbl_120c25_tc (File: /usr/pack/umc-65-kgf/umc/ll/uk65lscllmvbbl/a02/synopsys/uk65lscllmvbbl_120c25_tc.db)
+
+Number of ports:                          580
+Number of nets:                        310762
+Number of cells:                       310411
+Number of combinational cells:         254537
+Number of sequential cells:             55869
+Number of macros/black boxes:               0
+Number of buf/inv:                      60699
+Number of references:                     241
+
+Combinational area:             488813.411948
+Buf/Inv area:                    74707.562609
+Noncombinational area:          383283.368178
+Macro/Black Box area:                0.000000
+Net Interconnect area:      undefined  (Wire load has zero net area)
+
+Total cell area:                872096.780126
+Total area:                 undefined
+
+Hierarchical area distribution
+------------------------------
+
+                                  Global cell area              Local cell area
+                                  --------------------  -------------------------------- 
+Hierarchical cell                 Absolute     Percent  Combi-       Noncombi-    Black-
+                                  Total        Total    national     national     boxes   Design
+--------------------------------  -----------  -------  -----------  -----------  ------  ---------
+MasterModule                      872096.7801    100.0  151738.5636  127045.0828  0.0000  MasterModule
+vault0/plane1                     292279.6869     33.5  165609.7242  126669.9626  0.0000  Plane_4
+vault0/plane2                     294301.4467     33.7  167691.2441  126610.2027  0.0000  Plane_3
+vault1/plane0                       2255.7601      0.3    1270.8000     984.9600  0.0000  Plane_2
+vault1/plane1                       2247.1201      0.3    1262.1600     984.9600  0.0000  Plane_1
+vault1/plane2                       2229.1200      0.3    1240.9200     988.2000  0.0000  Plane_0
+--------------------------------  -----------  -------  -----------  -----------  ------  ---------
+Total                                                   488813.4119  383283.3682  0.0000
+
+1

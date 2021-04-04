@@ -1,0 +1,99 @@
+Information: Updating design information... (UID-85)
+Warning: Design 'MasterModule' contains 1 high-fanout nets. A fanout number of 1000 will be used for delay calculations involving these nets. (TIM-134)
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 1
+Design : MasterModule
+Version: N-2017.09
+Date   : Sun Apr  4 07:23:14 2021
+****************************************
+
+ # A fanout number of 1000 was used for high fanout net computations.
+
+Operating Conditions: uk65lscllmvbbl_120c25_tc   Library: uk65lscllmvbbl_120c25_tc
+Wire Load Model Mode: top
+
+  Startpoint: state_reg[3]
+              (rising edge-triggered flip-flop clocked by clock)
+  Endpoint: _T_92_reg[4]
+            (rising edge-triggered flip-flop clocked by clock)
+  Path Group: clock
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  MasterModule       wl0                   uk65lscllmvbbl_120c25_tc
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clock (rise edge)                               0.0000     0.0000
+  clock network delay (ideal)                           0.0000     0.0000
+  state_reg[3]/CK (DFQM8WA)                             0.0000 #   0.0000 r
+  state_reg[3]/Q (DFQM8WA)                              0.0944     0.0944 f
+  U23727/Z (XNR2M8WA)                                   0.0812     0.1756 r
+  U23678/Z (NR2B1M12WA)                                 0.0152     0.1908 f
+  U7119/Z (ND2M16WA)                                    0.0264     0.2172 r
+  U23213/Z (ND2M16WA)                                   0.0359     0.2531 f
+  U7142/Z (BUFM48WA)                                    0.0623     0.3154 f
+  vault0/plane2/io_rdcol0[2] (Plane_3)                  0.0000     0.3154 f
+  vault0/plane2/U1303/Z (INVM32W)                       0.0195     0.3350 r
+  vault0/plane2/U10373/Z (ND2M16WA)                     0.0534     0.3883 f
+  vault0/plane2/U12008/Z (NR2B1M6WA)                    0.0515     0.4399 r
+  vault0/plane2/U11244/Z (BUFM12W)                      0.0910     0.5309 r
+  vault0/plane2/U1057/Z (ND2M1W)                        0.0305     0.5614 f
+  vault0/plane2/U16103/Z (NR2B1M4W)                     0.0480     0.6094 f
+  vault0/plane2/U2599/Z (AN4M4WA)                       0.0466     0.6560 f
+  vault0/plane2/U10127/Z (ND2M4W)                       0.0181     0.6740 r
+  vault0/plane2/U11345/Z (NR2M4W)                       0.0120     0.6860 f
+  vault0/plane2/U11384/Z (CKND2M4W)                     0.0145     0.7005 r
+  vault0/plane2/U11383/Z (OAI21M4W)                     0.0217     0.7222 f
+  vault0/plane2/U11694/Z (ND2M4W)                       0.0317     0.7539 r
+  vault0/plane2/U11758/Z (NR2M4W)                       0.0139     0.7678 f
+  vault0/plane2/U11839/Z (AOI31M4W)                     0.0394     0.8071 r
+  vault0/plane2/io_rddata0[4] (Plane_3)                 0.0000     0.8071 r
+  U6265/Z (CKND2M4W)                                    0.0272     0.8343 f
+  U6205/Z (XNR3M8WA)                                    0.1170     0.9513 r
+  U6204/Z (ND2M6W)                                      0.0290     0.9803 f
+  U6267/Z (AOI21M12WA)                                  0.0350     1.0152 r
+  U7027/Z (AOI21M16WA)                                  0.0250     1.0402 f
+  U7084/Z (OAI21M8W)                                    0.0346     1.0748 r
+  U7083/Z (XOR2M8WA)                                    0.0686     1.1434 f
+  U6618/Z (CKND2M8W)                                    0.0228     1.1662 r
+  U6278/Z (OAI21M6W)                                    0.0238     1.1900 f
+  U6061/Z (AOI21M8W)                                    0.0270     1.2170 r
+  U23556/Z (ND2M6W)                                     0.0242     1.2412 f
+  U2810/Z (ND2M12WA)                                    0.0279     1.2691 r
+  U5929/Z (ND2M16WA)                                    0.0319     1.3010 f
+  U1853/Z (INVM16W)                                     0.0279     1.3289 r
+  U1899/Z (ND2M12WA)                                    0.0186     1.3475 f
+  U1907/Z (CKND2M12W)                                   0.0230     1.3705 r
+  U6884/Z (INVM12W)                                     0.0123     1.3828 f
+  U1908/Z (CKND2M12W)                                   0.0160     1.3988 r
+  U2064/Z (NR2M8W)                                      0.0105     1.4093 f
+  U2331/Z (CKND2M4W)                                    0.0148     1.4241 r
+  U4534/Z (ND3M4WA)                                     0.0231     1.4472 f
+  U23582/Z (CKND2M4W)                                   0.0220     1.4693 r
+  U4533/Z (ND2M6W)                                      0.0242     1.4934 f
+  U2356/Z (NR2M12WA)                                    0.0372     1.5306 r
+  U6920/Z (AN2M22WA)                                    0.0452     1.5758 r
+  U23927/Z (ND2M2W)                                     0.0195     1.5953 f
+  U28533/Z (ND3M2W)                                     0.0189     1.6142 r
+  _T_92_reg[4]/D (DFQM1WA)                              0.0000     1.6142 r
+  data arrival time                                                1.6142
+
+  clock clock (rise edge)                               1.0000     1.0000
+  clock network delay (ideal)                           0.0000     1.0000
+  _T_92_reg[4]/CK (DFQM1WA)                             0.0000     1.0000 r
+  library setup time                                   -0.0194     0.9806
+  data required time                                               0.9806
+  --------------------------------------------------------------------------
+  data required time                                               0.9806
+  data arrival time                                               -1.6142
+  --------------------------------------------------------------------------
+  slack (VIOLATED)                                                -0.6336
+
+
+1

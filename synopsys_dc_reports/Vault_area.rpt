@@ -1,0 +1,46 @@
+ 
+****************************************
+Report : area
+Design : Vault
+Version: N-2017.09
+Date   : Sun Apr  4 00:30:39 2021
+****************************************
+
+Library(s) Used:
+
+    uk65lscllmvbbl_120c25_tc (File: /usr/pack/umc-65-kgf/umc/ll/uk65lscllmvbbl/a02/synopsys/uk65lscllmvbbl_120c25_tc.db)
+
+Number of ports:                          475
+Number of nets:                        340328
+Number of cells:                       339953
+Number of combinational cells:         241646
+Number of sequential cells:             98304
+Number of macros/black boxes:               0
+Number of buf/inv:                       3968
+Number of references:                       3
+
+Combinational area:             632884.689429
+Buf/Inv area:                     6746.040237
+Noncombinational area:          672399.375000
+Macro/Black Box area:                0.000000
+Net Interconnect area:      undefined  (Wire load has zero net area)
+
+Total cell area:               1305284.064429
+Total area:                 undefined
+
+Hierarchical area distribution
+------------------------------
+
+                                  Global cell area               Local cell area
+                                  ---------------------  -------------------------------- 
+Hierarchical cell                 Absolute      Percent  Combi-       Noncombi-    Black-
+                                  Total         Total    national     national     boxes   Design
+--------------------------------  ------------  -------  -----------  -----------  ------  ---------
+Vault                             1305284.0644    100.0       0.0000       0.0000  0.0000  Vault
+plane0                             435107.5281     33.3  210974.4031  224133.1250  0.0000  Plane_2
+plane1                             435146.7681     33.3  211013.6431  224133.1250  0.0000  Plane_1
+plane2                             435029.7681     33.3  210896.6431  224133.1250  0.0000  Plane_0
+--------------------------------  ------------  -------  -----------  -----------  ------  ---------
+Total                                                    632884.6894  672399.3750  0.0000
+
+1

@@ -1,0 +1,52 @@
+Information: Updating design information... (UID-85)
+Warning: Design 'Vault' contains 1 high-fanout nets. A fanout number of 1000 will be used for delay calculations involving these nets. (TIM-134)
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 1
+Design : Vault
+Version: N-2017.09
+Date   : Sun Apr  4 00:30:39 2021
+****************************************
+
+ # A fanout number of 1000 was used for high fanout net computations.
+
+Operating Conditions: uk65lscllmvbbl_120c25_tc   Library: uk65lscllmvbbl_120c25_tc
+Wire Load Model Mode: top
+
+  Startpoint: plane1/mem_reg[3][4]
+              (rising edge-triggered flip-flop clocked by clock)
+  Endpoint: plane1/mem_reg[3][4]
+            (rising edge-triggered flip-flop clocked by clock)
+  Path Group: clock
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  Vault              wl0                   uk65lscllmvbbl_120c25_tc
+
+  Point                                    Incr       Path
+  -----------------------------------------------------------
+  clock clock (rise edge)                0.0000     0.0000
+  clock network delay (ideal)            0.0000     0.0000
+  plane1/mem_reg[3][4]/CK (DFQM1WA)      0.0000 #   0.0000 r
+  plane1/mem_reg[3][4]/Q (DFQM1WA)       0.1073     0.1073 f
+  plane1/U74070/Z (MAOI22M1WA)           0.0646     0.1720 f
+  plane1/mem_reg[3][4]/D (DFQM1WA)       0.0000     0.1720 f
+  data arrival time                                 0.1720
+
+  clock clock (rise edge)                1.0000     1.0000
+  clock network delay (ideal)            0.0000     1.0000
+  plane1/mem_reg[3][4]/CK (DFQM1WA)      0.0000     1.0000 r
+  library setup time                    -0.0211     0.9789
+  data required time                                0.9789
+  -----------------------------------------------------------
+  data required time                                0.9789
+  data arrival time                                -0.1720
+  -----------------------------------------------------------
+  slack (MET)                                       0.8070
+
+
+1

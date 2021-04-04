@@ -342,7 +342,7 @@ class MasterModule extends Module
    // *********************** STATE MACHINE DEFINITION ********************//
    // *********************************************************************//
    when(state === s_idle){
-      printf("[IDLE] ================ CHILLING HOMES ===============\n")
+      // printf("[IDLE] ================ CHILLING HOMES ===============\n")
       vault0.io.re := false.B
       vault0.io.we := false.B
       vault1.io.re := false.B
@@ -359,12 +359,12 @@ class MasterModule extends Module
       vault1.io.re := true.B // read the old value from plane
       vault1.io.we := false.B
       state := s_update_planeW
-      printf("[UPDATE-VAULT0-R-PLANE-0] row %d col %d value-read %d\n", vault0.io.rdrow0(0), vault0.io.rdcol0, vault0.io.rddata0(0))
-      printf("[UPDATE-VAULT0-R-PLANE-1] row %d col %d value-read %d\n", vault0.io.rdrow0(1), vault0.io.rdcol0, vault0.io.rddata0(1))
-      printf("[UPDATE-VAULT0-R-PLANE-2] row %d col %d value-read %d\n", vault0.io.rdrow0(2), vault0.io.rdcol0, vault0.io.rddata0(2))
-      printf("[UPDATE-VAULT1-R-PLANE-0] row %d col %d value-read %d\n", vault1.io.rdrow0(0), vault1.io.rdcol0, vault1.io.rddata0(0))
-      printf("[UPDATE-VAULT1-R-PLANE-1] row %d col %d value-read %d\n", vault1.io.rdrow0(1), vault1.io.rdcol0, vault1.io.rddata0(1))
-      printf("[UPDATE-VAULT1-R-PLANE-2] row %d col %d value-read %d\n", vault1.io.rdrow0(2), vault1.io.rdcol0, vault1.io.rddata0(2))
+      // printf("[UPDATE-VAULT0-R-PLANE-0] row %d col %d value-read %d\n", vault0.io.rdrow0(0), vault0.io.rdcol0, vault0.io.rddata0(0))
+      // printf("[UPDATE-VAULT0-R-PLANE-1] row %d col %d value-read %d\n", vault0.io.rdrow0(1), vault0.io.rdcol0, vault0.io.rddata0(1))
+      // printf("[UPDATE-VAULT0-R-PLANE-2] row %d col %d value-read %d\n", vault0.io.rdrow0(2), vault0.io.rdcol0, vault0.io.rddata0(2))
+      // printf("[UPDATE-VAULT1-R-PLANE-0] row %d col %d value-read %d\n", vault1.io.rdrow0(0), vault1.io.rdcol0, vault1.io.rddata0(0))
+      // printf("[UPDATE-VAULT1-R-PLANE-1] row %d col %d value-read %d\n", vault1.io.rdrow0(1), vault1.io.rdcol0, vault1.io.rddata0(1))
+      // printf("[UPDATE-VAULT1-R-PLANE-2] row %d col %d value-read %d\n", vault1.io.rdrow0(2), vault1.io.rdcol0, vault1.io.rddata0(2))
    }
    .elsewhen(state === s_update_planeW){
       vault0.io.re := false.B
@@ -372,32 +372,32 @@ class MasterModule extends Module
       vault1.io.re := false.B
       vault1.io.we := true.B // write the new value
       state := s_idle
-      printf("[UPDATE-VAULT0-W-PLANE-0] row %d col %d value-written %d\n", vault0.io.wrrow(0), vault0.io.wrcol, vault0.io.wrdata(0))
-      printf("[UPDATE-VAULT0-W-PLANE-1] row %d col %d value-written %d\n", vault0.io.wrrow(1), vault0.io.wrcol, vault0.io.wrdata(1))
-      printf("[UPDATE-VAULT0-W-PLANE-2] row %d col %d value-written %d\n", vault0.io.wrrow(2), vault0.io.wrcol, vault0.io.wrdata(2))
-      printf("[UPDATE-VAULT1-W-PLANE-0] row %d col %d value-written %d\n", vault1.io.wrrow(0), vault1.io.wrcol, vault1.io.wrdata(0))
-      printf("[UPDATE-VAULT1-W-PLANE-1] row %d col %d value-written %d\n", vault1.io.wrrow(1), vault1.io.wrcol, vault1.io.wrdata(1))
-      printf("[UPDATE-VAULT1-W-PLANE-2] row %d col %d value-written %d\n", vault1.io.wrrow(2), vault1.io.wrcol, vault1.io.wrdata(2))
+      // printf("[UPDATE-VAULT0-W-PLANE-0] row %d col %d value-written %d\n", vault0.io.wrrow(0), vault0.io.wrcol, vault0.io.wrdata(0))
+      // printf("[UPDATE-VAULT0-W-PLANE-1] row %d col %d value-written %d\n", vault0.io.wrrow(1), vault0.io.wrcol, vault0.io.wrdata(1))
+      // printf("[UPDATE-VAULT0-W-PLANE-2] row %d col %d value-written %d\n", vault0.io.wrrow(2), vault0.io.wrcol, vault0.io.wrdata(2))
+      // printf("[UPDATE-VAULT1-W-PLANE-0] row %d col %d value-written %d\n", vault1.io.wrrow(0), vault1.io.wrcol, vault1.io.wrdata(0))
+      // printf("[UPDATE-VAULT1-W-PLANE-1] row %d col %d value-written %d\n", vault1.io.wrrow(1), vault1.io.wrcol, vault1.io.wrdata(1))
+      // printf("[UPDATE-VAULT1-W-PLANE-2] row %d col %d value-written %d\n", vault1.io.wrrow(2), vault1.io.wrcol, vault1.io.wrdata(2))
    }
    // query state transitions
    .elsewhen(state === s_query_read2 || state === s_query_read4 || state === s_query_read6 || state === s_query_read8 || state === s_query_read10 || state === s_query_read12 || state === s_query_read14 || state === s_query_read16){
       vault0.io.re := true.B
       vault1.io.re := true.B
-      printf("[QUERY-VAULT0-PLANE-0] row0 %d col0 %d val0 %d\n", vault0.io.rdrow0(0), vault0.io.rdcol0, vault0.io.rddata0(0))
-      printf("[QUERY-VAULT0-PLANE-1] row0 %d col0 %d val0 %d\n", vault0.io.rdrow0(1), vault0.io.rdcol0, vault0.io.rddata0(1))
-      printf("[QUERY-VAULT0-PLANE-2] row0 %d col0 %d val0 %d\n", vault0.io.rdrow0(2), vault0.io.rdcol0, vault0.io.rddata0(2))
-      printf("[QUERY-VAULT0-PLANE-0] row1 %d col1 %d val1 %d\n", vault0.io.rdrow1(0), vault0.io.rdcol1, vault0.io.rddata1(0))
-      printf("[QUERY-VAULT0-PLANE-1] row1 %d col1 %d val1 %d\n", vault0.io.rdrow1(1), vault0.io.rdcol1, vault0.io.rddata1(1))
-      printf("[QUERY-VAULT0-PLANE-2] row1 %d col1 %d val1 %d\n", vault0.io.rdrow1(2), vault0.io.rdcol1, vault0.io.rddata1(2))
-
-      printf("[QUERY-VAULT1-PLANE-0] row0 %d col0 %d val0 %d\n", vault1.io.rdrow0(0), vault1.io.rdcol0, vault1.io.rddata0(0))
-      printf("[QUERY-VAULT1-PLANE-1] row0 %d col0 %d val0 %d\n", vault1.io.rdrow0(1), vault1.io.rdcol0, vault1.io.rddata0(1))
-      printf("[QUERY-VAULT1-PLANE-2] row0 %d col0 %d val0 %d\n", vault1.io.rdrow0(2), vault1.io.rdcol0, vault1.io.rddata0(2))
-      printf("[QUERY-VAULT1-PLANE-0] row1 %d col1 %d val1 %d\n", vault1.io.rdrow1(0), vault1.io.rdcol1, vault1.io.rddata1(0))
-      printf("[QUERY-VAULT1-PLANE-1] row1 %d col1 %d val1 %d\n", vault1.io.rdrow1(1), vault1.io.rdcol1, vault1.io.rddata1(1))
-      printf("[QUERY-VAULT1-PLANE-2] row1 %d col1 %d val1 %d\n", vault1.io.rdrow1(2), vault1.io.rdcol1, vault1.io.rddata1(2))
-
-      printf("[QUERY-VAULT0] max3 %d maxId %d\n", max3.io.maxNum, max3.io.maxId)
+      // printf("[QUERY-VAULT0-PLANE-0] row0 %d col0 %d val0 %d\n", vault0.io.rdrow0(0), vault0.io.rdcol0, vault0.io.rddata0(0))
+      // printf("[QUERY-VAULT0-PLANE-1] row0 %d col0 %d val0 %d\n", vault0.io.rdrow0(1), vault0.io.rdcol0, vault0.io.rddata0(1))
+      // printf("[QUERY-VAULT0-PLANE-2] row0 %d col0 %d val0 %d\n", vault0.io.rdrow0(2), vault0.io.rdcol0, vault0.io.rddata0(2))
+      // printf("[QUERY-VAULT0-PLANE-0] row1 %d col1 %d val1 %d\n", vault0.io.rdrow1(0), vault0.io.rdcol1, vault0.io.rddata1(0))
+      // printf("[QUERY-VAULT0-PLANE-1] row1 %d col1 %d val1 %d\n", vault0.io.rdrow1(1), vault0.io.rdcol1, vault0.io.rddata1(1))
+      // printf("[QUERY-VAULT0-PLANE-2] row1 %d col1 %d val1 %d\n", vault0.io.rdrow1(2), vault0.io.rdcol1, vault0.io.rddata1(2))
+      //
+      // printf("[QUERY-VAULT1-PLANE-0] row0 %d col0 %d val0 %d\n", vault1.io.rdrow0(0), vault1.io.rdcol0, vault1.io.rddata0(0))
+      // printf("[QUERY-VAULT1-PLANE-1] row0 %d col0 %d val0 %d\n", vault1.io.rdrow0(1), vault1.io.rdcol0, vault1.io.rddata0(1))
+      // printf("[QUERY-VAULT1-PLANE-2] row0 %d col0 %d val0 %d\n", vault1.io.rdrow0(2), vault1.io.rdcol0, vault1.io.rddata0(2))
+      // printf("[QUERY-VAULT1-PLANE-0] row1 %d col1 %d val1 %d\n", vault1.io.rdrow1(0), vault1.io.rdcol1, vault1.io.rddata1(0))
+      // printf("[QUERY-VAULT1-PLANE-1] row1 %d col1 %d val1 %d\n", vault1.io.rdrow1(1), vault1.io.rdcol1, vault1.io.rddata1(1))
+      // printf("[QUERY-VAULT1-PLANE-2] row1 %d col1 %d val1 %d\n", vault1.io.rdrow1(2), vault1.io.rdcol1, vault1.io.rddata1(2))
+      //
+      // printf("[QUERY-VAULT0] max3 %d maxId %d\n", max3.io.maxNum, max3.io.maxId)
 
       when(state === s_query_read2)          { state := s_query_read4 }
       .elsewhen(state === s_query_read4)     { state := s_query_read6 }

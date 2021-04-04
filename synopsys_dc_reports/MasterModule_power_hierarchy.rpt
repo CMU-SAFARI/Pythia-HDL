@@ -1,0 +1,44 @@
+ 
+****************************************
+Report : power
+        -hier
+        -analysis_effort high
+Design : MasterModule
+Version: N-2017.09
+Date   : Sun Apr  4 07:24:55 2021
+****************************************
+
+
+Library(s) Used:
+
+    uk65lscllmvbbl_120c25_tc (File: /usr/pack/umc-65-kgf/umc/ll/uk65lscllmvbbl/a02/synopsys/uk65lscllmvbbl_120c25_tc.db)
+
+
+Operating Conditions: uk65lscllmvbbl_120c25_tc   Library: uk65lscllmvbbl_120c25_tc
+Wire Load Model Mode: top
+
+Design        Wire Load Model            Library
+------------------------------------------------
+MasterModule           wl0               uk65lscllmvbbl_120c25_tc
+
+
+Global Operating Voltage = 1.2  
+Power-specific unit information :
+    Voltage Units = 1V
+    Capacitance Units = 1.000000pf
+    Time Units = 1ns
+    Dynamic Power Units = 1mW    (derived from V,C,T units)
+    Leakage Power Units = 1uW
+
+
+--------------------------------------------------------------------------------
+                                       Switch   Int      Leak     Total
+Hierarchy                              Power    Power    Power    Power    %
+--------------------------------------------------------------------------------
+MasterModule                              4.763  432.048  406.162  437.217 100.0
+  vault1/plane0 (Plane_2)              4.50e-02    1.143    1.185    1.190   0.3
+  vault1/plane1 (Plane_1)              4.58e-02    1.143    1.200    1.190   0.3
+  vault1/plane2 (Plane_0)              4.52e-02    1.142    1.171    1.188   0.3
+  vault0/plane1 (Plane_4)                 1.309  142.881  137.702  144.328  33.0
+  vault0/plane2 (Plane_3)                 1.351  142.846  139.163  144.336  33.0
+1
