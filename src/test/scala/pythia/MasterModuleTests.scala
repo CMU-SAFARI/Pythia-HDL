@@ -12,7 +12,7 @@ class MasterModuleTests(c: MasterModule) extends PeekPokeTester(c) {
       poke(c.io.sigUpdate, 1)
       step(3)
       poke(c.io.sigUpdate, 0)
-      step(1)
+      // step(1)
    }
 
    def queryQVStore(pc:Int, offset:Int, action:Int) = {
@@ -22,7 +22,7 @@ class MasterModuleTests(c: MasterModule) extends PeekPokeTester(c) {
       step(8)
       expect(c.io.qAction, action)
       poke(c.io.sigQuery, 0)
-      step(1)
+      // step(1)
    }
 
    val pc = 0x7fff3028

@@ -23,7 +23,9 @@ class MasterModule extends Module
       val uReward = Input(UInt(8.W))
    })
 
-   val igModule = Module(new IndexGen()) // index generator
+   val pcoIndexGen0 = Module(new IndexGen(plane_offset = 0xdead)) // index generator
+   val pcoIndexGen1 = Module(new IndexGen(plane_offset = 0xdada)) // index generator
+   val pcoIndexGen2 = Module(new IndexGen(plane_offset = 0xdeaf)) // index generator
    // val plane = Module(new Plane()) // plane
    val vault = Module(new Vault()) // vault
    val qvcompare0 = Module(new QVCompare()) // Q-value comparator
@@ -39,17 +41,20 @@ class MasterModule extends Module
 
    val update_reward = RegEnable(io.uReward, io.sigUpdate)
 
-   //=========== Connections for Index Generation Module ============//
-   igModule.io.pc := Mux(io.sigUpdate, io.uPC, io.qPC)
-   igModule.io.offset := Mux(io.sigUpdate, io.uOffset, io.qOffset)
-   //================================================================//
+   //=========== Connections for Index Generation Modules ============//
+   pcoIndexGen0.io.pc := Mux(io.sigUpdate, io.uPC, io.qPC)
+   pcoIndexGen0.io.offset := Mux(io.sigUpdate, io.uOffset, io.qOffset)
+   pcoIndexGen1.io.pc := Mux(io.sigUpdate, io.uPC, io.qPC)
+   pcoIndexGen1.io.offset := Mux(io.sigUpdate, io.uOffset, io.qOffset)
+   pcoIndexGen2.io.pc := Mux(io.sigUpdate, io.uPC, io.qPC)
+   pcoIndexGen2.io.offset := Mux(io.sigUpdate, io.uOffset, io.qOffset)
+   //=================================================================//
 
-   //=================== Connections for Plane Module ====================//
+   //=================== Connections for Vault Module ====================//
    when(io.sigUpdate){
-      // vault.io.rdrow0 := igModule.io.index
-      vault.io.rdrow0(0) := igModule.io.index; vault.io.rdrow0(1) := igModule.io.index; vault.io.rdrow0(2) := igModule.io.index;
+      vault.io.rdrow0(0) := pcoIndexGen0.io.index; vault.io.rdrow0(1) := pcoIndexGen1.io.index; vault.io.rdrow0(2) := pcoIndexGen2.io.index;
    }.elsewhen(io.sigQuery){
-      vault.io.rdrow0(0) := igModule.io.index; vault.io.rdrow0(1) := igModule.io.index; vault.io.rdrow0(2) := igModule.io.index;
+      vault.io.rdrow0(0) := pcoIndexGen0.io.index; vault.io.rdrow0(1) := pcoIndexGen1.io.index; vault.io.rdrow0(2) := pcoIndexGen2.io.index;
    }.otherwise{
       vault.io.rdrow0(0) := 0.U; vault.io.rdrow0(1) := 0.U; vault.io.rdrow0(2) := 0.U;
    }
@@ -73,7 +78,7 @@ class MasterModule extends Module
    when(io.sigUpdate){
       vault.io.rdrow1(0) := 0.U; vault.io.rdrow1(1) := 0.U; vault.io.rdrow1(2) := 0.U;
    }.elsewhen(io.sigQuery){
-      vault.io.rdrow1(0) := igModule.io.index; vault.io.rdrow1(1) := igModule.io.index; vault.io.rdrow1(2) := igModule.io.index;
+      vault.io.rdrow1(0) := pcoIndexGen0.io.index; vault.io.rdrow1(1) := pcoIndexGen1.io.index; vault.io.rdrow1(2) := pcoIndexGen2.io.index;
    }.otherwise{
       vault.io.rdrow1(0) := 0.U; vault.io.rdrow1(1) := 0.U; vault.io.rdrow1(2) := 0.U;
    }
@@ -96,7 +101,7 @@ class MasterModule extends Module
 
    vault.io.re := false.B
 
-   vault.io.wrrow(0) := RegEnable(igModule.io.index, io.sigUpdate); vault.io.wrrow(1) := RegEnable(igModule.io.index, io.sigUpdate); vault.io.wrrow(2) := RegEnable(igModule.io.index, io.sigUpdate);
+   vault.io.wrrow(0) := RegEnable(pcoIndexGen0.io.index, io.sigUpdate); vault.io.wrrow(1) := RegEnable(pcoIndexGen1.io.index, io.sigUpdate); vault.io.wrrow(2) := RegEnable(pcoIndexGen2.io.index, io.sigUpdate);
    vault.io.wrcol := RegEnable(io.uAction, io.sigUpdate)
    vault.io.wrdata(0) := RegEnable((vault.io.rddata0(0) >> 1) + update_reward, state === s_update_planeR)
    vault.io.wrdata(1) := RegEnable((vault.io.rddata0(1) >> 1) + update_reward, state === s_update_planeR)

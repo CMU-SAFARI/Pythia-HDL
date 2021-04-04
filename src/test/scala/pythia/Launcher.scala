@@ -8,7 +8,7 @@ import utils.PythiaRunner
 object Launcher {
   val tests = Map(
     "IndexGen" -> { (manager: TesterOptionsManager) =>
-      Driver.execute(() => new IndexGen(), manager) {
+      Driver.execute(() => new IndexGen(plane_offset = 0xdead), manager) {
         (c) => new IndexGenTests(c)
       }
     },
