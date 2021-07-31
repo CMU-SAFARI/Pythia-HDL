@@ -17,7 +17,7 @@
     <a href="https://github.com/CMU-SAFARI/Pythia-HDL">
         <img alt="Build" src="https://github.com/CMU-SAFARI/Pythia-HDL/actions/workflows/test.yml/badge.svg">
     </a>
-    <a href="https://doi.org/10.5281/zenodo.5149410"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.5149410.svg" alt="DOI"></a>
+    <a href="https://doi.org/10.5281/zenodo.5150706"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.5150706.svg" alt="DOI"></a>
 </p>
 
 <details open="open">
