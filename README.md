@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://github.com/rahulbera/Pythia-HDL">
+  <a href="https://github.com/CMU-SAFARI/Pythia-HDL">
     <img src="logo.png" alt="Logo" width="354" height="100">
   </a>
   <h3 align="center">A Customizable Hardware Prefetching Framework Using Online Reinforcement Learning
@@ -8,14 +8,14 @@
 </p>
 
 <p align="center">
-    <a href="https://github.com/rahulbera/Pythia-HDL/blob/master/LICENSE">
+    <a href="https://github.com/CMU-SAFARI/Pythia-HDL/blob/master/LICENSE">
         <img alt="GitHub" src="https://img.shields.io/badge/License-MIT-yellow.svg">
     </a>
-    <a href="https://github.com/rahulbera/Pythia-HDL/releases">
-        <img alt="GitHub release" src="https://img.shields.io/github/release/rahulbera/Pythia-HDL">
+    <a href="https://github.com/CMU-SAFARI/Pythia-HDL/releases">
+        <img alt="GitHub release" src="https://img.shields.io/github/release/CMU-SAFARI/Pythia-HDL">
     </a>
-    <a href="https://github.com/rahulbera/Pythia-HDL">
-        <img alt="Build" src="https://github.com/rahulbera/Pythia-HDL/actions/workflows/test.yml/badge.svg">
+    <a href="https://github.com/CMU-SAFARI/Pythia-HDL">
+        <img alt="Build" src="https://github.com/CMU-SAFARI/Pythia-HDL/actions/workflows/test.yml/badge.svg">
     </a>
     <a href="https://doi.org/10.5281/zenodo.5149410"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.5149410.svg" alt="DOI"></a>
 </p>
@@ -41,9 +41,9 @@ Pythia formulates hardware prefeteching as a reinforcement learning task. For ev
 
 Pythia is implemented in [ChampSim simulator](https://github.com/ChampSim/ChampSim). The code can be found here:
 <p align="center">
-<a href="https://github.com/rahulbera/Pythia">Pythia</a>
-    <a href="https://github.com/rahulbera/Pythia/releases">
-        <img alt="GitHub release" src="https://img.shields.io/github/release/rahulbera/Pythia">
+<a href="https://github.com/CMU-SAFARI/Pythia">Pythia</a>
+    <a href="https://github.com/CMU-SAFARI/Pythia/releases">
+        <img alt="GitHub release" src="https://img.shields.io/github/release/CMU-SAFARI/Pythia">
     </a>
 </p>
 
